@@ -1,0 +1,12 @@
+[submodule "imgui"]
+	path = PingPlotter/vendor/imgui
+	url = https://github.com/ccameron2/imgui
+[submodule "SDL"]
+	path = PingPlotter/vendor/SDL
+	url = https://github.com/ccameron2/SDL
+[submodule "implot"]
+	path = PingPlotter/vendor/implot
+	url = https://github.com/epezent/implot
+[submodule "imcmplib"]
+	path = PingPlotter/vendor/icmplib
+	url = https://github.com/markondej/cpp-icmplib
