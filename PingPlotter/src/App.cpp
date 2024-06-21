@@ -3,25 +3,49 @@
 
 
 #include <iostream>
+#include <mutex>
 #include <string>
 
 
 #include "implot.h"
 
+
+App::App()
+{
+    for (int i = 0; i < MAX_DATAPOINTS; i++) { mCurrentTime[i] = 0; mPingTimes[i] = 0; }
+
+    mWorker.thread = std::thread(&App::Thread, this);
+    mWorker.onCompleteCallback = [this] (double result, bool& completed)
+        {
+            completed = true;
+            mPingTimes[pingCount] = result;
+            mCurrentTime[pingCount] = appTimer.GetTime();
+
+            if (pingCount + 1 < MAX_DATAPOINTS)
+            {
+                pingCount++;
+            }
+            else
+            {
+                pingCount = 0;
+            }
+        };
+
+	// Signal the worker to start work
+	//mWorker.workReady.notify_one();
+}
+
+App::~App()
+{
+    mWorker.thread.join();
+}
+
 void App::Update()
 {
-    mPingTimes[frameCount] = PingAddress();
+    if (first) { mWorker.completed = true; first = false; }
 
-    mCurrentTime[frameCount] = appTimer.GetTime();
+    //mPingTimes[frameCount] = PingAddress();
 
-    if(frameCount + 1 < MAX_DATAPOINTS)
-    {
-        frameCount++;
-    }
-    else
-    {
-        frameCount = 0;
-    }
 
 	RenderAppUI();
 }
@@ -36,7 +60,7 @@ void App::RenderAppUI()
 {
     // Make the background a DockSpace
     {
-    ImGui::DockSpaceOverViewport(ImGui::GetMainViewport());
+		ImGui::DockSpaceOverViewport(ImGui::GetMainViewport());
     }
 
 
@@ -84,3 +108,14 @@ void App::RenderAppUI()
 
 }
 
+void App::Thread()
+{
+    while (true)
+    {
+        if(mWorker.completed)
+        {
+            mWorker.completed = false;
+            mWorker.onCompleteCallback(PingAddress(),mWorker.completed);
+        }
+    }
+}
