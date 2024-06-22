@@ -6,6 +6,7 @@
 #include <mutex>
 #include <string>
 
+#include "ImGuiProgressIndicators.h"
 
 #include "implot.h"
 
@@ -18,16 +19,18 @@ App::App()
     mWorker.onCompleteCallback = [this] (double result, bool& completed)
         {
             completed = true;
-            mPingTimes[pingCount] = result;
-            mCurrentTime[pingCount] = appTimer.GetTime();
+            mPingTimes[mPingCount] = result;
+            mCurrentTime[mPingCount] = mAppTimer.GetTime();
 
-            if (pingCount + 1 < MAX_DATAPOINTS)
+            mPingsStarted = true;
+			
+            if (mPingCount + 1 < MAX_DATAPOINTS)
             {
-                pingCount++;
+                mPingCount++;
             }
             else
             {
-                pingCount = 0;
+                mPingCount = 0;
             }
         };
 
@@ -37,12 +40,13 @@ App::App()
 
 App::~App()
 {
+    mWorker.running = false;
     mWorker.thread.join();
 }
 
 void App::Update()
 {
-    if (first) { mWorker.completed = true; first = false; }
+    if (mFirstRun) { mWorker.completed = true; mFirstRun = false; }
 
     //mPingTimes[frameCount] = PingAddress();
 
@@ -60,57 +64,49 @@ void App::RenderAppUI()
 {
     // Make the background a DockSpace
     {
-		ImGui::DockSpaceOverViewport(ImGui::GetMainViewport());
+		ImGui::DockSpaceOverViewport(ImGui::GetMainViewport(),ImGuiDockNodeFlags_PassthruCentralNode | ImGuiDockNodeFlags_AutoHideTabBar);
     }
 
-
-    // Test bar graph
-	{
-		ImGui::Begin("My Window");
-    	if (ImPlot::BeginPlot("My Plot"))
-    	{
-    		ImPlot::PlotLine("My Line Plot", mCurrentTime, mPingTimes, MAX_DATAPOINTS);
-    		ImPlot::EndPlot();
-    	}
-    	ImGui::End();
-	}
-
-
-    // 2. Show a simple window that we create ourselves. We use a Begin/End pair to create a named window.
+    if(!mPingsStarted)
     {
-        static float f = 0.0f;
-        static int counter = 0;
+        ImGui::Begin("Progress Indicators",nullptr, ImGuiWindowFlags_NoDecoration);
 
-        ImGui::Begin("Hello, world!");                          // Create a window called "Hello, world!" and append into it.
+        const ImU32 col = ImGui::GetColorU32(ImGuiCol_ButtonHovered);
+        const ImU32 bg = ImGui::GetColorU32(ImGuiCol_Button);
 
-        ImGui::Text("This is some useful text.");               // Display some text (you can use a format strings too)
-        ImGui::Checkbox("Demo Window", &show_demo_window);      // Edit bools storing our window open/close state
-        ImGui::Checkbox("Another Window", &show_another_window);
+        auto viewport = ImGui::GetMainViewport();
 
-        if (ImGui::SliderFloat("float", &f, 0.0f, 1.0f))
-        {
-            // This will run when above is changed
-        };
+        float radius = ImGui::GetMainViewport()->Size.y / 4;
+        float diameter = 2 * radius;
+        float windowWidth = viewport->Size.x;
+        float windowHeight = viewport->Size.y;
 
+        ImGui::Spinner("##spinner", radius, 30, col,
+             (windowWidth / 2) - radius, (windowHeight / 2) - radius);
 
-        ImGui::ColorEdit3("clear color", (float*)&clear_color); // Edit 3 floats representing a color
-
-        if (ImGui::Button("Button"))                            // Buttons return true when clicked (most widgets return true when edited/activated)
-            counter++;
-        ImGui::SameLine();
-        ImGui::Text("counter = %d", counter);
-
-        ImGuiIO& io = ImGui::GetIO();
-
-        ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / io.Framerate, io.Framerate);
         ImGui::End();
+    }
+    else
+    {
+        // Test bar graph
+        {
+            ImGui::Begin("My Window",nullptr);
+            if (ImPlot::BeginPlot("My Plot", ImVec2{ -1,0 }, ImPlotFlags_CanvasOnly /*| ImPlotFlags_NoFrame*/));
+            {
+                ImPlot::SetupAxes("Time", "Ping", ImPlotAxisFlags_AutoFit, ImPlotAxisFlags_AutoFit);
+                ImPlot::PlotLine("My Line Plot", mCurrentTime, mPingTimes, MAX_DATAPOINTS);
+
+                ImPlot::EndPlot();
+            }
+            ImGui::End();
+        }
     }
 
 }
 
 void App::Thread()
 {
-    while (true)
+    while (mWorker.running)
     {
         if(mWorker.completed)
         {

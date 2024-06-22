@@ -28,9 +28,10 @@ private:
 	float mCurrentTime[MAX_DATAPOINTS];
 	float mPingTimes[MAX_DATAPOINTS];
 
-	int pingCount = 0;
-	Timer appTimer;
-	bool first = true;
+	int mPingCount = 0;
+	Timer mAppTimer;
+	bool mFirstRun = true;
+	bool mPingsStarted = false;
 };
 
 struct WorkerThread
@@ -40,6 +41,7 @@ struct WorkerThread
 	std::mutex              lock;
 	std::function<void(double,bool&)> onCompleteCallback;
 	bool completed = false;
+	bool running = true;
 };
 
 
