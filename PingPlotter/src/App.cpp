@@ -22,15 +22,15 @@ App::App()
             mPingTimes[mPingCount] = result;
             mCurrentTime[mPingCount] = mAppTimer.GetTime();
 
-            mPingsStarted = true;
+            if(mPingCount >= MAX_DATAPOINTS - 1) mPingsStarted = true;
 			
-            if (mPingCount + 1 < MAX_DATAPOINTS)
+            if (mPingCount >= MAX_DATAPOINTS - 1)
             {
-                mPingCount++;
+                mPingCount = 0;
             }
             else
             {
-                mPingCount = 0;
+                mPingCount++;
             }
         };
 
@@ -50,7 +50,6 @@ void App::Update()
 
     //mPingTimes[frameCount] = PingAddress();
 
-
 	RenderAppUI();
 }
 
@@ -69,35 +68,47 @@ void App::RenderAppUI()
 
     if(!mPingsStarted)
     {
-        ImGui::Begin("Progress Indicators",nullptr, ImGuiWindowFlags_NoDecoration);
+	    {
+		    ImGui::Begin("Progress Indicators",nullptr, ImGuiWindowFlags_NoDecoration);
 
-        const ImU32 col = ImGui::GetColorU32(ImGuiCol_ButtonHovered);
-        const ImU32 bg = ImGui::GetColorU32(ImGuiCol_Button);
+	    	const ImU32 col = ImGui::GetColorU32(ImGuiCol_ButtonHovered);
+	    	const ImU32 bg = ImGui::GetColorU32(ImGuiCol_Button);
 
-        auto viewport = ImGui::GetMainViewport();
+	    	auto viewport = ImGui::GetMainViewport();
 
-        float radius = ImGui::GetMainViewport()->Size.y / 4;
-        float diameter = 2 * radius;
-        float windowWidth = viewport->Size.x;
-        float windowHeight = viewport->Size.y;
+	    	const float radius = ImGui::GetMainViewport()->Size.y / 4;
+	    	const float windowWidth = viewport->Size.x;
+	    	const float windowHeight = viewport->Size.y;
+	    	const float offsetX = (windowWidth / 2) - radius;
+	    	const float offsetY = (windowHeight / 2) - radius;
 
-        ImGui::Spinner("##spinner", radius, 30, col,
-             (windowWidth / 2) - radius, (windowHeight / 2) - radius);
+	    	ImGui::Spinner("Loading Spinner", radius, 30, col, offsetX, offsetY);
 
-        ImGui::End();
+	    	ImGui::End();
+	    }
     }
     else
     {
         // Test bar graph
         {
-            ImGui::Begin("My Window",nullptr);
-            if (ImPlot::BeginPlot("My Plot", ImVec2{ -1,0 }, ImPlotFlags_CanvasOnly /*| ImPlotFlags_NoFrame*/));
+            ImGui::Begin("My Window", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoInputs);
+
+            if (ImPlot::BeginPlot("My Plot", ImVec2{ ImGui::GetWindowViewport()->Size.x,ImGui::GetWindowViewport()->Size.y }, ImPlotFlags_CanvasOnly /*| ImPlotFlags_NoFrame*/));
             {
                 ImPlot::SetupAxes("Time", "Ping", ImPlotAxisFlags_AutoFit, ImPlotAxisFlags_AutoFit);
                 ImPlot::PlotLine("My Line Plot", mCurrentTime, mPingTimes, MAX_DATAPOINTS);
 
                 ImPlot::EndPlot();
             }
+            ImGui::End();
+        }
+
+        {
+            ImGui::Begin("FPS");
+
+        	ImGuiIO& io = ImGui::GetIO();
+            ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / io.Framerate, io.Framerate);
+
             ImGui::End();
         }
     }
