@@ -13,6 +13,9 @@
 
 App::App()
 {
+    mCurrentTime = new float[MAX_DATAPOINTS];
+    mPingTimes = new float[MAX_DATAPOINTS];
+
     for (int i = 0; i < MAX_DATAPOINTS; i++) { mCurrentTime[i] = 0; mPingTimes[i] = 0; }
 
     mWorker.thread = std::thread(&App::Thread, this);
@@ -22,7 +25,7 @@ App::App()
             mPingTimes[mPingCount] = result;
             mCurrentTime[mPingCount] = mAppTimer.GetTime();
 
-            if(mPingCount >= MAX_DATAPOINTS - 1) mPingsStarted = true;
+            mPingsStarted = true;
 			
             if (mPingCount >= MAX_DATAPOINTS - 1)
             {
@@ -42,11 +45,17 @@ App::~App()
 {
     mWorker.running = false;
     mWorker.thread.join();
+    delete[] mCurrentTime;
+    delete[] mPingTimes;
 }
 
 void App::Update()
 {
-    if (mFirstRun) { mWorker.completed = true; mFirstRun = false; }
+    if (mFirstRun)
+    {
+	    mWorker.completed = true;
+    	mFirstRun = false;
+    }
 
     //mPingTimes[frameCount] = PingAddress();
 
@@ -69,7 +78,7 @@ void App::RenderAppUI()
     if(!mPingsStarted)
     {
 	    {
-		    ImGui::Begin("Progress Indicators",nullptr, ImGuiWindowFlags_NoDecoration);
+		    ImGui::Begin("Progress Indicator",nullptr, ImGuiWindowFlags_NoDecoration);
 
 	    	const ImU32 col = ImGui::GetColorU32(ImGuiCol_ButtonHovered);
 	    	const ImU32 bg = ImGui::GetColorU32(ImGuiCol_Button);
@@ -89,14 +98,54 @@ void App::RenderAppUI()
     }
     else
     {
-        // Test bar graph
-        {
-            ImGui::Begin("My Window", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoInputs);
+        float cumulativePing = 0;
+        int dataDisplay = mMaxDataDisplay;
 
-            if (ImPlot::BeginPlot("My Plot", ImVec2{ ImGui::GetWindowViewport()->Size.x,ImGui::GetWindowViewport()->Size.y }, ImPlotFlags_CanvasOnly /*| ImPlotFlags_NoFrame*/));
+        // Ping / time line graph
+        {
+            ImGui::Begin("Ping Plotter", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoInputs);
+
+            if (ImPlot::BeginPlot("My Plot", ImVec2{ -1,-1 }, ImPlotFlags_CanvasOnly /*| ImPlotFlags_NoFrame*/));
             {
                 ImPlot::SetupAxes("Time", "Ping", ImPlotAxisFlags_AutoFit, ImPlotAxisFlags_AutoFit);
-                ImPlot::PlotLine("My Line Plot", mCurrentTime, mPingTimes, MAX_DATAPOINTS);
+
+                // Get segment of data to display from data arrays
+                if (mPingCount < mMaxDataDisplay)
+                {
+                    dataDisplay = mPingCount;
+                }
+                else
+                {
+                    dataDisplay = mMaxDataDisplay;
+                }
+
+                auto* currentTimeDisplay = new float[mMaxDataDisplay];
+                auto* pingTimesDisplay = new float[mMaxDataDisplay];
+
+                if(mPingCount > dataDisplay)
+                {
+                    for (int i = 0; i < dataDisplay; i++)
+                    {
+                        auto offset = mPingCount - dataDisplay;
+                        currentTimeDisplay[i] = mCurrentTime[i + offset];
+                        pingTimesDisplay[i] = mPingTimes[i + offset];
+                        cumulativePing += pingTimesDisplay[i];
+                    }
+                }
+                else
+                {
+                    for (int i = 0; i < dataDisplay; i++)
+                    {
+                        currentTimeDisplay[i] = mCurrentTime[i];
+                        pingTimesDisplay[i] = mPingTimes[i];
+                        cumulativePing += pingTimesDisplay[i];
+                    }
+                }
+
+                ImPlot::PlotLine("My Line Plot", currentTimeDisplay, pingTimesDisplay, dataDisplay);
+
+                delete currentTimeDisplay;
+                delete pingTimesDisplay;
 
                 ImPlot::EndPlot();
             }
@@ -104,10 +153,50 @@ void App::RenderAppUI()
         }
 
         {
-            ImGui::Begin("FPS");
+            static bool showDemoWindow = true;
+            ImGui::ShowDemoWindow(&showDemoWindow);
+        }
 
-        	ImGuiIO& io = ImGui::GetIO();
+        // Control panel
+        {
+            ImGui::Begin("Controls");
+
+            static bool showAllData = false;
+            if(ImGui::Checkbox("View All", &showAllData))
+            {
+                mMaxDataDisplay = INITIAL_DATA_TO_VIEW;
+            }
+
+            ImGui::SameLine();
+
+            if (ImGui::Button("Clear"))
+            {
+                ClearVisualiser();
+            }
+
+            // Max data limit slider
+            if (showAllData)
+            {
+                ImGui::PushItemFlag(ImGuiItemFlags_Disabled, true);
+                ImGui::PushStyleVar(ImGuiStyleVar_Alpha, ImGui::GetStyle().Alpha * 0.5f);
+            	mMaxDataDisplay = mPingCount;
+            }
+
+            ImGui::PushItemWidth(ImGui::GetWindowWidth());
+            ImGui::SliderInt("Max data", &mMaxDataDisplay, 5, mPingCount > INITIAL_DATA_TO_VIEW ? mPingCount : INITIAL_DATA_TO_VIEW);
+            
+
+            if (showAllData)
+            {
+                ImGui::PopItemFlag();
+				ImGui::PopStyleVar();
+            }
+            ////
+
+        	ImGuiIO& io = ImGui::GetIO(); 
             ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / io.Framerate, io.Framerate);
+
+            ImGui::Text("Average ping: %.2f ms", cumulativePing / dataDisplay);
 
             ImGui::End();
         }
@@ -125,4 +214,9 @@ void App::Thread()
             mWorker.onCompleteCallback(PingAddress(),mWorker.completed);
         }
     }
+}
+
+void App::ClearVisualiser()
+{
+    mPingCount = 0;
 }

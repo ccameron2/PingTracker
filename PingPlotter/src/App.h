@@ -6,8 +6,8 @@
 #include "icmplib.h" // Must be above windows.h defined in file below
 #include "Timer.h"
 
-const int MAX_DATAPOINTS = 100;
-
+const int MAX_DATAPOINTS = 100000;
+const int INITIAL_DATA_TO_VIEW = 100;
 class App
 {
 public:
@@ -24,9 +24,11 @@ private:
 
 	void Thread();
 	void SortData();
+	void ClearVisualiser();
+	float* mCurrentTime;
+	float* mPingTimes;
 
-	float mCurrentTime[MAX_DATAPOINTS];
-	float mPingTimes[MAX_DATAPOINTS];
+	int mMaxDataDisplay = 200;
 
 	int mPingCount = 0;
 	Timer mAppTimer;
