@@ -71,7 +71,7 @@ project "PingPlotter"
         
         postbuildcommands
         {
-            --"{COPY} vendor/SDL/libs/%{cfg.buildcfg}/SDL3.dll ../bin/" .. outputdir .. "/FennecApp"
+            "{COPY} src/PingPlotterConfig.ini ../bin/" .. outputdir .. "/%{prj.name}"
         }
 
     filter "configurations:Debug"
