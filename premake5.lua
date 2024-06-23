@@ -17,20 +17,18 @@ IncludeDir["ImGui"] = "%{prj.name}/vendor/ImGui"
 IncludeDir["ImPlot"] = "%{prj.name}/vendor/ImPlot"
 IncludeDir["Icmplib"] = "%{prj.name}/vendor/icmplib"
 
-externalproject "SDL"
-   location "PingPlotter/vendor/SDL/VisualC/SDL/"
+externalproject "SDL3-static"
+   location "PingPlotter/vendor/SDL/build/"
    uuid "1a708b00-5301-11ee-9027-0800200c9a66"
    kind "StaticLib"
    language "C"
-
-include "PingPlotter/vendor/ImGui/ImGui.lua"
 
 project "PingPlotter"
     location "PingPlotter"
     kind "WindowedApp"
     language "C++"
     cppdialect "C++20"
-    staticruntime "on"
+    staticruntime "off"
     
     targetdir("bin/" .. outputdir .. "/%{prj.name}")
     objdir("bin-int/" .. outputdir .. "/%{prj.name}")
@@ -39,8 +37,14 @@ project "PingPlotter"
     {
         "%{prj.name}/src/**.h",
         "%{prj.name}/src/**.cpp",
+        "%{prj.name}/vendor/ImGui/*.h",
+        "%{prj.name}/vendor/ImGui/*.cpp",
         "%{prj.name}/vendor/ImPlot/**.h",
         "%{prj.name}/vendor/ImPlot/**.cpp",
+        "%{prj.name}/vendor/ImGui/backends/imgui_impl_sdlrenderer3.h",
+        "%{prj.name}/vendor/ImGui/backends/imgui_impl_sdlrenderer3.cpp",
+        "%{prj.name}/vendor/ImGui/backends/imgui_impl_sdl3.h",
+        "%{prj.name}/vendor/ImGui/backends/imgui_impl_sdl3.cpp",
     }
 
     includedirs
@@ -54,8 +58,7 @@ project "PingPlotter"
 
     links
     {
-        "SDL",
-        "ImGui",
+        "SDL3-static",
         "setupapi.lib",
         "winmm.lib",
         "version.lib"
