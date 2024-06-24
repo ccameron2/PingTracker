@@ -147,8 +147,8 @@ void App::RenderAppUI()
 
                 ImPlot::PlotLine("My Line Plot", currentTimeDisplay, pingTimesDisplay, dataDisplay);
 
-                delete currentTimeDisplay;
-                delete pingTimesDisplay;
+                delete[] currentTimeDisplay;
+                delete[] pingTimesDisplay;
 
                 ImPlot::EndPlot();
             }
