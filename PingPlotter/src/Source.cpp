@@ -12,6 +12,7 @@
 
 #include "App.h"
 #include "implot.h"
+#include "../vendor/SDL/src/render/SDL_sysrender.h"
 #include "backends/imgui_impl_sdl3.h"
 #include "backends/imgui_impl_sdlrenderer3.h"
 #if defined(IMGUI_IMPL_OPENGL_ES2)
@@ -24,6 +25,8 @@
 int main(int, char**)
 {
 {
+	SDL_SetHint(SDL_HINT_RENDER_VSYNC, "1");
+
 	// Setup SDL
 	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER | SDL_INIT_GAMEPAD) != 0)
 	{
@@ -43,7 +46,8 @@ int main(int, char**)
 		printf("Error: SDL_CreateWindow(): %s\n", SDL_GetError());
 		return -1;
 	}
-	SDL_Renderer* renderer = SDL_CreateRenderer(window, nullptr, SDL_RENDERER_PRESENTVSYNC | SDL_RENDERER_ACCELERATED);
+	SDL_Renderer* renderer = SDL_CreateRenderer(window, nullptr/*, SDL_RENDERER_PRESENTVSYNC | SDL_RENDERER_ACCELERATED*/);
+
 	if (renderer == nullptr)
 	{
 		SDL_Log("Error: SDL_CreateRenderer(): %s\n", SDL_GetError());
@@ -103,13 +107,14 @@ int main(int, char**)
 		ImGui::NewFrame();
 
 		app.Update();
+		//renderer->SetVSync(renderer,0);
 
 		// Rendering
 		ImGui::Render();
 		//SDL_SetRenderScale(renderer, io.DisplayFramebufferScale.x, io.DisplayFramebufferScale.y);
 		SDL_SetRenderDrawColor(renderer, (Uint8)(clear_color.x * 255), (Uint8)(clear_color.y * 255), (Uint8)(clear_color.z * 255), (Uint8)(clear_color.w * 255));
 		SDL_RenderClear(renderer);
-		ImGui_ImplSDLRenderer3_RenderDrawData(ImGui::GetDrawData());
+		ImGui_ImplSDLRenderer3_RenderDrawData(ImGui::GetDrawData(),renderer);
 		SDL_RenderPresent(renderer);
 	}
 
