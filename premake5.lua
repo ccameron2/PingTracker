@@ -28,7 +28,7 @@ project "PingPlotter"
     kind "WindowedApp"
     language "C++"
     cppdialect "C++20"
-    staticruntime "off"
+    staticruntime "on"
     
     targetdir("bin/" .. outputdir .. "/%{prj.name}")
     objdir("bin-int/" .. outputdir .. "/%{prj.name}")
@@ -66,7 +66,7 @@ project "PingPlotter"
 
     filter "system:windows"
         systemversion "latest"
-    
+        kind "WindowedApp"
         defines
         {
             "WINDOWS"
@@ -76,6 +76,12 @@ project "PingPlotter"
         {
             "{COPY} src/PingPlotterConfig.ini ../bin/" .. outputdir .. "/%{prj.name}"
         }
+
+    filter "system:macosx"
+        kind "WindowedApp"
+
+    filter "system:linux"
+        kind "WindowedApp"
 
     filter "configurations:Debug"
         runtime "Debug"

@@ -1,10 +1,8 @@
-
 #include "App.h"
 
-
+#include <filesystem>
 #include <iostream>
 #include <mutex>
-#include <string>
 
 #include "ImGuiProgressIndicators.h"
 
@@ -15,6 +13,7 @@ App::App()
 {
     mCurrentTime = new float[MAX_DATAPOINTS];
     mPingTimes = new float[MAX_DATAPOINTS];
+
 
     for (int i = 0; i < MAX_DATAPOINTS; i++) { mCurrentTime[i] = 0; mPingTimes[i] = 0; }
 
@@ -36,9 +35,6 @@ App::App()
                 mPingCount++;
             }
         };
-
-	// Signal the worker to start work
-	//mWorker.workReady.notify_one();
 }
 
 App::~App()
@@ -57,8 +53,6 @@ void App::Update()
     	mFirstRun = false;
     }
 
-    //mPingTimes[frameCount] = PingAddress();
-
 	RenderAppUI();
 }
 
@@ -72,7 +66,11 @@ void App::RenderAppUI()
 {
     // Make the background a DockSpace
     {
+#ifdef _DEBUG
 		ImGui::DockSpaceOverViewport(ImGui::GetMainViewport(),ImGuiDockNodeFlags_PassthruCentralNode | ImGuiDockNodeFlags_AutoHideTabBar);
+#else
+        ImGui::DockSpaceOverViewport(ImGui::GetMainViewport(), ImGuiDockNodeFlags_PassthruCentralNode | ImGuiDockNodeFlags_AutoHideTabBar | ImGuiDockNodeFlags_NoResize);
+#endif
     }
 
     if(!mPingsStarted)
@@ -153,16 +151,18 @@ void App::RenderAppUI()
         }
 
         {
-            static bool showDemoWindow = true;
-            ImGui::ShowDemoWindow(&showDemoWindow);
+           /* static bool showDemoWindow = true;
+            ImGui::ShowDemoWindow(&showDemoWindow);*/
         }
 
         // Control panel
         {
+#ifdef _DEBUG
             ImGui::Begin("Controls");
-
-            static bool showAllData = false;
-            if(ImGui::Checkbox("View All", &showAllData))
+#else
+            ImGui::Begin("Controls", nullptr, ImGuiWindowFlags_NoNav | ImGuiWindowFlags_NoMove);
+#endif
+            if(ImGui::Checkbox("View All", &mShowAllData))
             {
                 mMaxDataDisplay = INITIAL_DATA_TO_VIEW;
             }
@@ -175,7 +175,7 @@ void App::RenderAppUI()
             }
 
             // Max data limit slider
-            if (showAllData)
+            if (mShowAllData)
             {
                 ImGui::PushItemFlag(ImGuiItemFlags_Disabled, true);
                 ImGui::PushStyleVar(ImGuiStyleVar_Alpha, ImGui::GetStyle().Alpha * 0.5f);
@@ -186,18 +186,18 @@ void App::RenderAppUI()
             ImGui::SliderInt("Max data", &mMaxDataDisplay, 5, mPingCount > INITIAL_DATA_TO_VIEW ? mPingCount : INITIAL_DATA_TO_VIEW);
             
 
-            if (showAllData)
+            if (mShowAllData)
             {
                 ImGui::PopItemFlag();
 				ImGui::PopStyleVar();
             }
             ////
 
-        	ImGuiIO& io = ImGui::GetIO(); 
-            ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / io.Framerate, io.Framerate);
-
+        	ImGuiIO& io = ImGui::GetIO();
             ImGui::Text("Average ping: %.2f ms", cumulativePing / dataDisplay);
-
+#ifdef _DEBUG
+            ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / io.Framerate, io.Framerate);
+#endif
             ImGui::End();
         }
     }

@@ -5,7 +5,10 @@
 #include <stdio.h>
 
 #include <SDL3/SDL.h>
+
+#ifdef WINDOWS
 #include "SDL3/SDL_main.h"
+#endif
 
 #include "App.h"
 #include "implot.h"

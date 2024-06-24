@@ -7,7 +7,7 @@
 #include "Timer.h"
 
 const int MAX_DATAPOINTS = 100000;
-const int INITIAL_DATA_TO_VIEW = 100;
+const int INITIAL_DATA_TO_VIEW = 500;
 class App
 {
 public:
@@ -28,19 +28,18 @@ private:
 	float* mCurrentTime;
 	float* mPingTimes;
 
-	int mMaxDataDisplay = 200;
+	int mMaxDataDisplay = 500;
 
 	int mPingCount = 0;
 	Timer mAppTimer;
 	bool mFirstRun = true;
 	bool mPingsStarted = false;
+	bool mShowAllData = false;
 };
 
 struct WorkerThread
 {
-	std::thread             thread;
-	std::condition_variable workReady;
-	std::mutex              lock;
+	std::thread thread;
 	std::function<void(double,bool&)> onCompleteCallback;
 	bool completed = false;
 	bool running = true;
