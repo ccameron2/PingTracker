@@ -13,3 +13,6 @@
 [submodule "PingPlotter/Vendor/plf_nanotimer"]
 	path = PingPlotter/Vendor/plf_nanotimer
 	url = https://github.com/mattreecebentley/plf_nanotimer
+[submodule "PingPlotter/vendor/plf_nanotimer"]
+	path = PingPlotter/vendor/plf_nanotimer
+	url = https://github.com/mattreecebentley/plf_nanotimer
