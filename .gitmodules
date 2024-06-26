@@ -10,3 +10,6 @@
 [submodule "imcmplib"]
 	path = PingPlotter/vendor/icmplib
 	url = https://github.com/markondej/cpp-icmplib
+[submodule "PingPlotter/Vendor/plf_nanotimer"]
+	path = PingPlotter/Vendor/plf_nanotimer
+	url = https://github.com/mattreecebentley/plf_nanotimer

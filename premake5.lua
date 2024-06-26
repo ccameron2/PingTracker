@@ -16,6 +16,7 @@ IncludeDir["SDL"] = "%{prj.name}/vendor/SDL/include"
 IncludeDir["ImGui"] = "%{prj.name}/vendor/ImGui"
 IncludeDir["ImPlot"] = "%{prj.name}/vendor/ImPlot"
 IncludeDir["Icmplib"] = "%{prj.name}/vendor/icmplib"
+IncludeDir["plf_nanotimer"] = "%{prj.name}/vendor/plf_nanotimer"
 
 externalproject "SDL3-static"
    location "PingPlotter/vendor/SDL/build/"
@@ -53,7 +54,8 @@ project "PingPlotter"
         "%{IncludeDir.SDL}",
         "%{IncludeDir.ImGui}",
         "%{IncludeDir.ImPlot}",
-        "%{IncludeDir.Icmplib}"
+        "%{IncludeDir.Icmplib}",
+        "%{IncludeDir.plf_nanotimer}"
     }
 
     links

@@ -11,6 +11,7 @@
 
 App::App()
 {
+    mAppTimer.start();
     mCurrentTime = new float[MAX_DATAPOINTS];
     mPingTimes = new float[MAX_DATAPOINTS];
 
@@ -22,7 +23,7 @@ App::App()
         {
             completed = true;
             mPingTimes[mPingCount] = result;
-            mCurrentTime[mPingCount] = mAppTimer.GetTime();
+            mCurrentTime[mPingCount] = mAppTimer.get_elapsed_ms()  / 1000.0f;
 
             mPingsStarted = true;
 			
@@ -110,7 +111,7 @@ void App::RenderAppUI()
 
             if (ImPlot::BeginPlot("My Plot", ImVec2{ -1,-1 }, ImPlotFlags_CanvasOnly /*| ImPlotFlags_NoFrame*/));
             {
-                ImPlot::SetupAxes("Time", "Ping", ImPlotAxisFlags_AutoFit, ImPlotAxisFlags_AutoFit);
+                ImPlot::SetupAxes("Time (s)", "Ping (ms)", ImPlotAxisFlags_AutoFit, ImPlotAxisFlags_AutoFit);
 
                 // Get segment of data to display from data arrays
                 if (mPingCount < mMaxDataDisplay)

@@ -1,10 +1,10 @@
 #pragma once
 #include <condition_variable>
 #include <functional>
+#include <plf_nanotimer.h>
 
 #include "imgui.h"
 #include "icmplib.h" // Must be above windows.h defined in file below
-#include "Timer.h"
 
 const int MAX_DATAPOINTS = 100000;
 const int INITIAL_DATA_TO_VIEW = 500;
@@ -31,7 +31,7 @@ private:
 	int mMaxDataDisplay = 500;
 
 	int mPingCount = 0;
-	Timer mAppTimer;
+	plf::nanotimer mAppTimer;
 	bool mFirstRun = true;
 	bool mPingsStarted = false;
 	bool mShowAllData = false;
