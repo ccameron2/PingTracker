@@ -25,36 +25,31 @@
 int main(int, char**)
 {
 {
+
+	//// Setup SDL
+	//if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER | SDL_INIT_GAMEPAD) != 0)
+	//{
+	//	printf("Error: SDL_Init(): %s\n", SDL_GetError());
+	//	return -1;
+	//}
 	SDL_SetHint(SDL_HINT_RENDER_VSYNC, "1");
 
-	// Setup SDL
-	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER | SDL_INIT_GAMEPAD) != 0)
-	{
-		printf("Error: SDL_Init(): %s\n", SDL_GetError());
-		return -1;
-	}
-
 	App app;
-	// Enable native IME.
-	SDL_SetHint(SDL_HINT_IME_SHOW_UI, "1");
 
 	// Create window with SDL_Renderer graphics context
-	Uint32 window_flags = SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_HIDDEN;
-	SDL_Window* window = SDL_CreateWindow("Ping Plotter", 1280, 720, window_flags);
-	if (window == nullptr)
-	{
-		printf("Error: SDL_CreateWindow(): %s\n", SDL_GetError());
-		return -1;
-	}
-	SDL_Renderer* renderer = SDL_CreateRenderer(window, nullptr/*, SDL_RENDERER_PRESENTVSYNC | SDL_RENDERER_ACCELERATED*/);
+	Uint32 window_flags = SDL_WINDOW_RESIZABLE;
 
-	if (renderer == nullptr)
-	{
-		SDL_Log("Error: SDL_CreateRenderer(): %s\n", SDL_GetError());
-		return -1;
-	}
+	SDL_Window* window;
+	SDL_Renderer* renderer;
+
+	SDL_CreateWindowAndRenderer("Ping Plotter", 1280, 720, window_flags, &window, &renderer);
 	SDL_SetWindowPosition(window, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);
 	SDL_ShowWindow(window);
+
+
+
+	//SDL_Surface* icon = IMG_Load_RW("icon.png");
+	//SDL_SetWindowIcon(sdlWindow, icon);
 
 	// Setup Dear ImGui context
 	IMGUI_CHECKVERSION();
@@ -103,15 +98,18 @@ int main(int, char**)
 
 		// Start the Dear ImGui frame
 		ImGui_ImplSDLRenderer3_NewFrame();
+
+		// Mem leak here 12 bytes
 		ImGui_ImplSDL3_NewFrame();
+		// mem leak end
+
 		ImGui::NewFrame();
 
 		app.Update();
-		//renderer->SetVSync(renderer,0);
 
 		// Rendering
 		ImGui::Render();
-		//SDL_SetRenderScale(renderer, io.DisplayFramebufferScale.x, io.DisplayFramebufferScale.y);
+		SDL_SetRenderScale(renderer, io.DisplayFramebufferScale.x, io.DisplayFramebufferScale.y);
 		SDL_SetRenderDrawColor(renderer, (Uint8)(clear_color.x * 255), (Uint8)(clear_color.y * 255), (Uint8)(clear_color.z * 255), (Uint8)(clear_color.w * 255));
 		SDL_RenderClear(renderer);
 		ImGui_ImplSDLRenderer3_RenderDrawData(ImGui::GetDrawData(),renderer);

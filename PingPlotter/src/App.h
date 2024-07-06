@@ -6,6 +6,9 @@
 #include "imgui.h"
 #include "icmplib.h" // Must be above windows.h defined in file below
 
+const int MAX_INTERVAL_MS = 100000;
+const int MIN_INTERVAL_MS = 1;
+
 const int MAX_DATAPOINTS = 100000;
 const int INITIAL_DATA_TO_VIEW = 500;
 class App
@@ -25,9 +28,10 @@ private:
 	void Thread();
 	void SortData();
 	void ClearVisualiser();
+	void LoadWindowIcon(std::string fileName);
 	float* mCurrentTime;
 	float* mPingTimes;
-
+	int mThreadSleepTime = 10;
 	int mMaxDataDisplay = 500;
 
 	int mPingCount = 0;
@@ -35,6 +39,8 @@ private:
 	bool mFirstRun = true;
 	bool mPingsStarted = false;
 	bool mShowAllData = false;
+	bool mDarkMode = true;
+	int mIntervalBoxWidth = 40;
 };
 
 struct WorkerThread

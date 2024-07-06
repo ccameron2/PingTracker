@@ -7,14 +7,15 @@
 #include "ImGuiProgressIndicators.h"
 
 #include "implot.h"
-
+#include "png.h"
+#include "lodepng.h"
 
 App::App()
 {
     mAppTimer.start();
     mCurrentTime = new float[MAX_DATAPOINTS];
     mPingTimes = new float[MAX_DATAPOINTS];
-
+    LoadWindowIcon("PingPlotter.png");
 
     for (int i = 0; i < MAX_DATAPOINTS; i++) { mCurrentTime[i] = 0; mPingTimes[i] = 0; }
 
@@ -166,7 +167,7 @@ void App::RenderAppUI()
 #ifdef _DEBUG
             ImGui::Begin("Controls");
 #else
-            ImGui::Begin("Controls", nullptr, ImGuiWindowFlags_NoNav | ImGuiWindowFlags_NoMove);
+            ImGui::Begin("Controls", nullptr, ImGuiWindowFlags_NoNav | ImGuiWindowFlags_NoMove );
 #endif
             if(ImGui::Checkbox("View All", &mShowAllData))
             {
@@ -178,6 +179,23 @@ void App::RenderAppUI()
             if (ImGui::Button("Clear"))
             {
                 ClearVisualiser();
+            }
+
+            ImGui::SameLine();
+            ImGui::PushItemWidth(mIntervalBoxWidth);
+
+            if (ImGui::InputInt("Interval", &mThreadSleepTime,-1,-1))
+            {
+                if (mThreadSleepTime > MAX_INTERVAL_MS) mThreadSleepTime = MAX_INTERVAL_MS;
+                if (mThreadSleepTime < MIN_INTERVAL_MS) mThreadSleepTime = MIN_INTERVAL_MS;
+            }
+
+            ImGui::SameLine();
+
+            if (ImGui::Checkbox("Dark mode", &mDarkMode))
+            {
+                if (mDarkMode) ImGui::StyleColorsDark();
+                else ImGui::StyleColorsLight();
             }
 
             // Max data limit slider
@@ -201,9 +219,9 @@ void App::RenderAppUI()
 
         	ImGuiIO& io = ImGui::GetIO();
             ImGui::Text("Average ping: %.2f ms", cumulativePing / dataDisplay);
-#ifdef _DEBUG
+//#ifdef _DEBUG
             ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / io.Framerate, io.Framerate);
-#endif
+//#endif
             ImGui::End();
         }
     }
@@ -218,6 +236,7 @@ void App::Thread()
         {
             mWorker.completed = false;
             mWorker.onCompleteCallback(PingAddress(),mWorker.completed);
+            std::this_thread::sleep_for(std::chrono::milliseconds(mThreadSleepTime));
         }
     }
 }
@@ -226,3 +245,38 @@ void App::ClearVisualiser()
 {
     mPingCount = 0;
 }
+
+//Lodepng Example 1
+//Decode from disk to raw pixels with a single function call
+void decodeOneStep(const unsigned char* filename)
+{
+    std::vector<unsigned char> image; //the raw pixels
+    unsigned width, height;
+
+    //decode
+    size_t iconSize = 256;
+    unsigned error = lodepng::decode(image, width, height, filename, iconSize);
+
+    //if there's an error, display it
+    if (error) std::cout << "decoder error " << error << ": " << lodepng_error_text(error) << std::endl;
+
+    //the pixels are now in the vector "image", 4 bytes per pixel, ordered RGBARGBA..., use it as texture, draw it, ...
+}
+
+void App::LoadWindowIcon(std::string fileName)
+{
+    std::vector<unsigned char> image;
+    unsigned width, height;
+
+    std::filesystem::path filepath = fileName;
+
+    filepath = fileName;
+    if (filepath.is_relative())
+    {
+        filepath = std::filesystem::current_path() / filepath;
+    }
+    std::string path = filepath.string();
+    const unsigned char* unsignedPath = (const unsigned char*)path.c_str();
+    decodeOneStep(unsignedPath);
+}
+
