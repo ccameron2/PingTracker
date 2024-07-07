@@ -40,10 +40,11 @@ private:
 	plf::nanotimer mAppTimer;
 	bool mFirstRun = true;
 	bool mPingsStarted = false;
-	bool mShowAllData = false;
+	bool mShowAllData = true;
 	bool mDarkMode = true;
 	int mIntervalBoxWidth = 40;
 	SDL_Window* mSDLWindow;
+	SDL_Surface* mIconSurface;
 };
 
 struct WorkerThread

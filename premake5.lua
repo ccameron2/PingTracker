@@ -86,6 +86,9 @@ project "PingPlotter"
         {
             "{COPY} src/PingPlotterConfig.ini ../bin/" .. outputdir .. "/%{prj.name}"
         }
+        
+        files { 'PingPlotter/PingPlotter.rc', '**.ico' }
+        vpaths { ['Resources/*'] = { '*.rc', '**.ico' }}
 
     filter "system:macosx"
         kind "WindowedApp"

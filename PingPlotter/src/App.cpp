@@ -27,7 +27,7 @@ App::App(SDL_Window* window)
     mAppTimer.start();
     mCurrentTime = new float[MAX_DATAPOINTS];
     mPingTimes = new float[MAX_DATAPOINTS];
-    LoadWindowIcon("PingPlotter.png"); // load from header
+    LoadWindowIcon(); // load from header
     for (int i = 0; i < MAX_DATAPOINTS; i++) { mCurrentTime[i] = 0; mPingTimes[i] = 0; }
 
     mWorker.thread = std::thread(&App::Thread, this);
@@ -52,6 +52,7 @@ App::App(SDL_Window* window)
 
 App::~App()
 {
+    SDL_DestroySurface(mIconSurface);
     mWorker.running = false;
     mWorker.thread.join();
     delete[] mCurrentTime;
@@ -230,9 +231,9 @@ void App::RenderAppUI()
 
         	ImGuiIO& io = ImGui::GetIO();
             ImGui::Text("Average ping: %.2f ms", cumulativePing / dataDisplay);
-//#ifdef _DEBUG
+#ifdef _DEBUG
             ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / io.Framerate, io.Framerate);
-//#endif
+#endif
             ImGui::End();
         }
     }
@@ -257,72 +258,51 @@ void App::ClearVisualiser()
     mPingCount = 0;
 }
 
-enum
-{
-    kPixelSize = 4,
-    kWidth = 256,
-    kHeight = 256,
-    kResolution = kWidth * kHeight,
-    kPixelBufferSize = kPixelSize * kResolution
-};
-
 // this leaks 
 void App::LoadWindowIcon()
 {
-
-    unsigned char pixelBuffer[kPixelBufferSize];
-
-    //std::filesystem::path filepath = fileName;
-
-    //filepath = fileName;
-    //if (filepath.is_relative())
-    //{
-    //    filepath = std::filesystem::current_path() / filepath;
-    //}
+    // this leaks
+	const bin2cpp::File& resource = bin2cpp::getIconPngFile();
     //
-    //std::string path = filepath.string();
-    int width, height, numComponents;
 
-    const bin2cpp::File& resource = bin2cpp::getIconPngFile();
     auto pixelCPPData = resource.getBuffer();
     auto pixelCPPDataUnsigned = (const stbi_uc*)pixelCPPData;
-    unsigned char* pixelData = stbi_load_from_memory(pixelCPPDataUnsigned, sizeof(pixelBuffer) , &width, &height, &numComponents, 4);
-   // unsigned char* pixelData = stbi_load(path.c_str(), &width, &height, &numComponents, 4);
 
-    memcpy(pixelBuffer, pixelData, sizeof(pixelBuffer));
+    int width, height, numComponents;
 
-    SDL_Surface* rgbSurface = SDL_CreateSurface(kWidth, kHeight, SDL_PIXELFORMAT_RGBA32);
+    unsigned char* pixelData = stbi_load_from_memory(pixelCPPDataUnsigned, resource.getSize(), &width, &height, &numComponents, 4);
 
-    SDL_LockSurface(rgbSurface);
+    mIconSurface = SDL_CreateSurface(width, height, SDL_PIXELFORMAT_RGBA32);
 
-    for (int y = 0; y < kHeight; ++y)
+    SDL_LockSurface(mIconSurface);
+
+    for (int y = 0; y < height; ++y)
     {
-        for (int x = 0; x < kWidth; ++x)
+        for (int x = 0; x < width; ++x)
         {
-            Uint32* pixel = nullptr;
-            int surfaceBytesPerPixel = rgbSurface->format->bytes_per_pixel;
-            int surfaceRowSize = rgbSurface->pitch;
+            Uint32* pixel;
+            int surfaceBytesPerPixel = mIconSurface->format->bytes_per_pixel;
+            int surfaceRowSize = mIconSurface->pitch;
             int surfaceOffset = x * surfaceBytesPerPixel + y * surfaceRowSize;
-            Uint8* pixels = (Uint8*)rgbSurface->pixels;
-            SDL_PixelFormat* pixelFormat = rgbSurface->format;
+            Uint8* pixels = (Uint8*)mIconSurface->pixels;
+            SDL_PixelFormat* pixelFormat = mIconSurface->format;
 
-            int pixelBufferOffset = 4 * (x + kWidth * y);
-            unsigned char kRed = pixelBuffer[pixelBufferOffset];
-            unsigned char kGreen = pixelBuffer[pixelBufferOffset + 1];
-            unsigned char kBlue = pixelBuffer[pixelBufferOffset + 2];
-            unsigned char kAlpha = pixelBuffer[pixelBufferOffset + 3];
+            int pixelBufferOffset = 4 * (x + width * y);
+            unsigned char red =   pixelData[pixelBufferOffset];
+            unsigned char green = pixelData[pixelBufferOffset + 1];
+            unsigned char blue =  pixelData[pixelBufferOffset + 2];
+            unsigned char alpha = pixelData[pixelBufferOffset + 3];
 
-            Uint32 colour =
-                SDL_MapRGBA(pixelFormat, kRed, kGreen, kBlue, kAlpha);
+            Uint32 colour = SDL_MapRGBA(pixelFormat, red, green, blue, alpha);
 
             pixel = (Uint32*)(pixels + surfaceOffset);
             *pixel = colour;
         }
     }
 
-    SDL_UnlockSurface(rgbSurface);
+    SDL_UnlockSurface(mIconSurface);
 
-	//stbi_image_free(pixelData);
+	stbi_image_free(pixelData);
 
-    SDL_SetWindowIcon(mSDLWindow,rgbSurface);
+    SDL_SetWindowIcon(mSDLWindow,mIconSurface);
 }
