@@ -7,16 +7,27 @@
 #include "ImGuiProgressIndicators.h"
 
 #include "implot.h"
-#include "png.h"
-#include "lodepng.h"
 
-App::App()
+#define STB_IMAGE_IMPLEMENTATION
+
+#include <SDL3/SDL_pixels.h>
+#include <SDL3/SDL_surface.h>
+#include <SDL3/SDL_video.h>
+
+#include "stb_image.h"
+
+#include <fstream>
+
+#include "Icon.h"
+
+App::App(SDL_Window* window)
 {
+    mSDLWindow = window;
+
     mAppTimer.start();
     mCurrentTime = new float[MAX_DATAPOINTS];
     mPingTimes = new float[MAX_DATAPOINTS];
-    LoadWindowIcon("PingPlotter.png");
-
+    LoadWindowIcon("PingPlotter.png"); // load from header
     for (int i = 0; i < MAX_DATAPOINTS; i++) { mCurrentTime[i] = 0; mPingTimes[i] = 0; }
 
     mWorker.thread = std::thread(&App::Thread, this);
@@ -246,37 +257,72 @@ void App::ClearVisualiser()
     mPingCount = 0;
 }
 
-//Lodepng Example 1
-//Decode from disk to raw pixels with a single function call
-void decodeOneStep(const unsigned char* filename)
+enum
 {
-    std::vector<unsigned char> image; //the raw pixels
-    unsigned width, height;
+    kPixelSize = 4,
+    kWidth = 256,
+    kHeight = 256,
+    kResolution = kWidth * kHeight,
+    kPixelBufferSize = kPixelSize * kResolution
+};
 
-    //decode
-    size_t iconSize = 256;
-    unsigned error = lodepng::decode(image, width, height, filename, iconSize);
-
-    //if there's an error, display it
-    if (error) std::cout << "decoder error " << error << ": " << lodepng_error_text(error) << std::endl;
-
-    //the pixels are now in the vector "image", 4 bytes per pixel, ordered RGBARGBA..., use it as texture, draw it, ...
-}
-
-void App::LoadWindowIcon(std::string fileName)
+// this leaks 
+void App::LoadWindowIcon()
 {
-    std::vector<unsigned char> image;
-    unsigned width, height;
 
-    std::filesystem::path filepath = fileName;
+    unsigned char pixelBuffer[kPixelBufferSize];
 
-    filepath = fileName;
-    if (filepath.is_relative())
+    //std::filesystem::path filepath = fileName;
+
+    //filepath = fileName;
+    //if (filepath.is_relative())
+    //{
+    //    filepath = std::filesystem::current_path() / filepath;
+    //}
+    //
+    //std::string path = filepath.string();
+    int width, height, numComponents;
+
+    const bin2cpp::File& resource = bin2cpp::getIconPngFile();
+    auto pixelCPPData = resource.getBuffer();
+    auto pixelCPPDataUnsigned = (const stbi_uc*)pixelCPPData;
+    unsigned char* pixelData = stbi_load_from_memory(pixelCPPDataUnsigned, sizeof(pixelBuffer) , &width, &height, &numComponents, 4);
+   // unsigned char* pixelData = stbi_load(path.c_str(), &width, &height, &numComponents, 4);
+
+    memcpy(pixelBuffer, pixelData, sizeof(pixelBuffer));
+
+    SDL_Surface* rgbSurface = SDL_CreateSurface(kWidth, kHeight, SDL_PIXELFORMAT_RGBA32);
+
+    SDL_LockSurface(rgbSurface);
+
+    for (int y = 0; y < kHeight; ++y)
     {
-        filepath = std::filesystem::current_path() / filepath;
-    }
-    std::string path = filepath.string();
-    const unsigned char* unsignedPath = (const unsigned char*)path.c_str();
-    decodeOneStep(unsignedPath);
-}
+        for (int x = 0; x < kWidth; ++x)
+        {
+            Uint32* pixel = nullptr;
+            int surfaceBytesPerPixel = rgbSurface->format->bytes_per_pixel;
+            int surfaceRowSize = rgbSurface->pitch;
+            int surfaceOffset = x * surfaceBytesPerPixel + y * surfaceRowSize;
+            Uint8* pixels = (Uint8*)rgbSurface->pixels;
+            SDL_PixelFormat* pixelFormat = rgbSurface->format;
 
+            int pixelBufferOffset = 4 * (x + kWidth * y);
+            unsigned char kRed = pixelBuffer[pixelBufferOffset];
+            unsigned char kGreen = pixelBuffer[pixelBufferOffset + 1];
+            unsigned char kBlue = pixelBuffer[pixelBufferOffset + 2];
+            unsigned char kAlpha = pixelBuffer[pixelBufferOffset + 3];
+
+            Uint32 colour =
+                SDL_MapRGBA(pixelFormat, kRed, kGreen, kBlue, kAlpha);
+
+            pixel = (Uint32*)(pixels + surfaceOffset);
+            *pixel = colour;
+        }
+    }
+
+    SDL_UnlockSurface(rgbSurface);
+
+	//stbi_image_free(pixelData);
+
+    SDL_SetWindowIcon(mSDLWindow,rgbSurface);
+}

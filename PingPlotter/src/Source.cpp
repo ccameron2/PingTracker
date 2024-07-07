@@ -34,7 +34,6 @@ int main(int, char**)
 	//}
 	SDL_SetHint(SDL_HINT_RENDER_VSYNC, "1");
 
-	App app;
 
 	// Create window with SDL_Renderer graphics context
 	Uint32 window_flags = SDL_WINDOW_RESIZABLE;
@@ -46,7 +45,7 @@ int main(int, char**)
 	SDL_SetWindowPosition(window, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);
 	SDL_ShowWindow(window);
 
-
+	App app(window);
 
 	//SDL_Surface* icon = IMG_Load_RW("icon.png");
 	//SDL_SetWindowIcon(sdlWindow, icon);

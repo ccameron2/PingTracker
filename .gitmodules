@@ -16,9 +16,6 @@
 [submodule "PingPlotter/vendor/plf_nanotimer"]
 	path = PingPlotter/vendor/plf_nanotimer
 	url = https://github.com/mattreecebentley/plf_nanotimer
-[submodule "PingPlotter/vendor/libpng"]
-	path = PingPlotter/vendor/libpng
-	url = https://github.com/pnggroup/libpng
-[submodule "PingPlotter/vendor/zlib"]
-	path = PingPlotter/vendor/libpng/zlib
-	url = https://github.com/madler/zlib
+[submodule "PingPlotter/vendor/stb"]
+	path = PingPlotter/vendor/stb
+	url = https://github.com/nothings/stb

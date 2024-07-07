@@ -10,5 +10,3 @@ x64/
 *.vcxproj
 *.vcxproj.filters
 *.vcxproj.user
-
-/PingPlotter/vendor/libpng

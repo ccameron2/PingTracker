@@ -2,6 +2,7 @@
 #include <condition_variable>
 #include <functional>
 #include <plf_nanotimer.h>
+#include <SDL3/SDL_video.h>
 
 #include "imgui.h"
 #include "icmplib.h" // Must be above windows.h defined in file below
@@ -14,7 +15,7 @@ const int INITIAL_DATA_TO_VIEW = 500;
 class App
 {
 public:
-	App();
+	App(SDL_Window* window);
 	~App();
 	void Update();
 	double PingAddress();
@@ -28,7 +29,8 @@ private:
 	void Thread();
 	void SortData();
 	void ClearVisualiser();
-	void LoadWindowIcon(std::string fileName);
+	void LoadWindowIcon();
+
 	float* mCurrentTime;
 	float* mPingTimes;
 	int mThreadSleepTime = 10;
@@ -41,6 +43,7 @@ private:
 	bool mShowAllData = false;
 	bool mDarkMode = true;
 	int mIntervalBoxWidth = 40;
+	SDL_Window* mSDLWindow;
 };
 
 struct WorkerThread
