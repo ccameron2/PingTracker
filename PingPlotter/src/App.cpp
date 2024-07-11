@@ -20,6 +20,60 @@
 
 #include "Icon.h"
 
+
+void App::SetColours()
+{
+    auto& colors = ImGui::GetStyle().Colors;
+    //colors[ImGuiCol_WindowBg] = ImVec4{ 0.1f, 0.105f, 0.11f, 1.0f };
+
+    colors[ImGuiCol_Header] = mCustomColour;
+    colors[ImGuiCol_HeaderHovered] = mCustomColourFull;
+    colors[ImGuiCol_HeaderActive] = mCustomColourFull;
+
+    colors[ImGuiCol_Button] = mCustomColour;
+    colors[ImGuiCol_ButtonHovered] = mCustomColourFull;
+    colors[ImGuiCol_ButtonActive] = mCustomColourFull;
+
+    colors[ImGuiCol_FrameBg] = mCustomBackgroundColour;
+    colors[ImGuiCol_FrameBgHovered] = mCustomBackgroundColour;
+    colors[ImGuiCol_FrameBgActive] = mCustomBackgroundColour;
+
+    colors[ImGuiCol_Tab] = mCustomColour;
+	colors[ImGuiCol_TabHovered] = mCustomColourFull;
+	colors[ImGuiCol_TabActive] = mCustomColourFull;
+    colors[ImGuiCol_TabUnfocused] = mCustomColourDimmer;
+    colors[ImGuiCol_TabUnfocusedActive] = mCustomColourDim;
+
+    colors[ImGuiCol_TitleBg] = mCustomColour;
+	colors[ImGuiCol_TitleBgActive] = mCustomColourFull;
+	colors[ImGuiCol_TitleBgCollapsed] = mCustomColourFull;
+
+    colors[ImGuiCol_DockingPreview] = mCustomColour;
+    colors[ImGuiCol_DockingEmptyBg] = mCustomColour;
+
+    colors[ImGuiCol_CheckMark] = mCustomColour;
+    colors[ImGuiCol_SliderGrab] = mCustomColour;
+    colors[ImGuiCol_SliderGrabActive] = mCustomColourFull;
+
+    colors[ImGuiCol_ResizeGrip] = mCustomColour;
+    colors[ImGuiCol_ResizeGripActive] = mCustomColourFull;
+	colors[ImGuiCol_ResizeGripHovered] = mCustomColourFull;
+
+	colors[ImGuiCol_SeparatorActive] = mCustomColourFull;
+    colors[ImGuiCol_SeparatorHovered] = mCustomColour;
+
+    colors[ImGuiCol_TextLink] = mCustomColour;
+    colors[ImGuiCol_TextSelectedBg] = mCustomColourFull;
+
+    colors[ImGuiCol_PlotLines] = mCustomColour;
+    colors[ImGuiCol_PlotLines] = mCustomColourFull;
+
+    ImGuiStyle& style = ImGui::GetStyle();
+    style.FrameRounding = 4.0f;
+
+}
+
+
 App::App(SDL_Window* window)
 {
     mSDLWindow = window;
@@ -63,6 +117,8 @@ void App::Update()
 {
     if (mFirstRun)
     {
+        SetColours();
+
 	    mWorker.completed = true;
     	mFirstRun = false;
     }
@@ -111,68 +167,11 @@ void App::RenderAppUI()
     else
     {
         float cumulativePing = 0;
-        int dataDisplay = mMaxDataDisplay;
 
-        // Ping / time line graph
-        {
-#ifdef _DEBUG
-            ImGui::Begin("Ping Plotter", nullptr, ImGuiWindowFlags_NoDecoration);
-#else
-            ImGui::Begin("Ping Plotter", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoInputs);
-
-#endif
-
-            if (ImPlot::BeginPlot("My Plot", ImVec2{ -1,-1 }, ImPlotFlags_CanvasOnly /*| ImPlotFlags_NoFrame*/));
-            {
-                ImPlot::SetupAxes("Time (s)", "Ping (ms)", ImPlotAxisFlags_AutoFit, ImPlotAxisFlags_AutoFit);
-
-                // Get segment of data to display from data arrays
-                if (mPingCount < mMaxDataDisplay)
-                {
-                    dataDisplay = mPingCount;
-                }
-                else
-                {
-                    dataDisplay = mMaxDataDisplay;
-                }
-
-                auto* currentTimeDisplay = new float[mMaxDataDisplay];
-                auto* pingTimesDisplay = new float[mMaxDataDisplay];
-
-                if(mPingCount > dataDisplay)
-                {
-                    for (int i = 0; i < dataDisplay; i++)
-                    {
-                        auto offset = mPingCount - dataDisplay;
-                        currentTimeDisplay[i] = mCurrentTime[i + offset];
-                        pingTimesDisplay[i] = mPingTimes[i + offset];
-                        cumulativePing += pingTimesDisplay[i];
-                    }
-                }
-                else
-                {
-                    for (int i = 0; i < dataDisplay; i++)
-                    {
-                        currentTimeDisplay[i] = mCurrentTime[i];
-                        pingTimesDisplay[i] = mPingTimes[i];
-                        cumulativePing += pingTimesDisplay[i];
-                    }
-                }
-
-                ImPlot::PlotLine("My Line Plot", currentTimeDisplay, pingTimesDisplay, dataDisplay);
-
-                delete[] currentTimeDisplay;
-                delete[] pingTimesDisplay;
-
-                ImPlot::EndPlot();
-            }
-            ImGui::End();
-        }
-
-        {
-           /* static bool showDemoWindow = true;
-            ImGui::ShowDemoWindow(&showDemoWindow);*/
-        }
+        //{
+        //    static bool showDemoWindow = false;
+        //    ImGui::ShowDemoWindow(&showDemoWindow);
+        //}
 
         // Control panel
         {
@@ -202,20 +201,13 @@ void App::RenderAppUI()
                 if (mThreadSleepTime < MIN_INTERVAL_MS) mThreadSleepTime = MIN_INTERVAL_MS;
             }
 
-            ImGui::SameLine();
-
-            if (ImGui::Checkbox("Dark mode", &mDarkMode))
-            {
-                if (mDarkMode) ImGui::StyleColorsDark();
-                else ImGui::StyleColorsLight();
-            }
-
             // Max data limit slider
             if (mShowAllData)
             {
                 ImGui::PushItemFlag(ImGuiItemFlags_Disabled, true);
                 ImGui::PushStyleVar(ImGuiStyleVar_Alpha, ImGui::GetStyle().Alpha * 0.5f);
-            	mMaxDataDisplay = mPingCount;
+                mMaxDataDisplay = mPingCount;
+
             }
 
             ImGui::PushItemWidth(ImGui::GetWindowWidth());
@@ -225,17 +217,83 @@ void App::RenderAppUI()
             if (mShowAllData)
             {
                 ImGui::PopItemFlag();
-				ImGui::PopStyleVar();
+                ImGui::PopStyleVar();
             }
             ////
 
         	ImGuiIO& io = ImGui::GetIO();
-            ImGui::Text("Average ping: %.2f ms", cumulativePing / dataDisplay);
+            ImGui::Text("Average ping: %.2f ms", mCumulativePing / mMaxDataDisplay);
 #ifdef _DEBUG
             ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / io.Framerate, io.Framerate);
 #endif
             ImGui::End();
         }
+
+        int dataDisplay = mMaxDataDisplay;
+
+        // Ping / time line graph
+        {
+#ifdef _DEBUG
+            ImGui::Begin("Ping Plotter", nullptr, ImGuiWindowFlags_NoDecoration);
+#else
+            ImGui::Begin("Ping Plotter", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoInputs);
+
+#endif
+            if (!mMinimised)
+            {
+                if (ImPlot::BeginPlot("My Plot", ImVec2{ -1,-1 }, ImPlotFlags_CanvasOnly /*| ImPlotFlags_NoFrame*/));
+                {
+                    ImPlot::SetupAxes("Time (s)", "Ping (ms)", ImPlotAxisFlags_AutoFit, ImPlotAxisFlags_AutoFit);
+
+                    // Get segment of data to display from data arrays
+                    if (mPingCount < mMaxDataDisplay)
+                    {
+                        dataDisplay = mPingCount;
+                    }
+                    else
+                    {
+                        dataDisplay = mMaxDataDisplay;
+                    }
+
+                    auto* currentTimeDisplay = new float[mMaxDataDisplay];
+                    auto* pingTimesDisplay = new float[mMaxDataDisplay];
+
+                    if (mPingCount > dataDisplay)
+                    {
+                        for (int i = 0; i < dataDisplay; i++)
+                        {
+                            auto offset = mPingCount - dataDisplay;
+                            currentTimeDisplay[i] = mCurrentTime[i + offset];
+                            pingTimesDisplay[i] = mPingTimes[i + offset];
+                            cumulativePing += pingTimesDisplay[i];
+                        }
+                    }
+                    else
+                    {
+                        for (int i = 0; i < dataDisplay; i++)
+                        {
+                            currentTimeDisplay[i] = mCurrentTime[i];
+                            pingTimesDisplay[i] = mPingTimes[i];
+                            cumulativePing += pingTimesDisplay[i];
+                        }
+                    }
+                    mCumulativePing = cumulativePing;
+
+                    ImPlot::PushStyleColor(ImPlotCol_Line, mCustomColour);
+
+                    ImPlot::PlotLine("My Line Plot", currentTimeDisplay, pingTimesDisplay, dataDisplay);
+
+                    ImPlot::PopStyleColor();
+
+                    delete[] currentTimeDisplay;
+                    delete[] pingTimesDisplay;
+
+                    ImPlot::EndPlot();
+                }
+            }
+            ImGui::End();
+            }
+
     }
 
 }
@@ -258,7 +316,6 @@ void App::ClearVisualiser()
     mPingCount = 0;
 }
 
-// this leaks 
 void App::LoadWindowIcon()
 {
     // this leaks

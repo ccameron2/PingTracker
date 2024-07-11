@@ -15,12 +15,15 @@ const int INITIAL_DATA_TO_VIEW = 500;
 class App
 {
 public:
+	void SetColours();
 	App(SDL_Window* window);
 	~App();
 	void Update();
 	double PingAddress();
 	void RenderAppUI();
 	ImVec4 GetClearColour() { return clear_color; }
+	bool mMinimised = false;
+
 private:
 	bool show_demo_window = true;
 	bool show_another_window = false;
@@ -35,16 +38,22 @@ private:
 	float* mPingTimes;
 	int mThreadSleepTime = 10;
 	int mMaxDataDisplay = 500;
-
+	int mMaxDataUIInput = 500;
+	float mCumulativePing = 0.0f;
 	int mPingCount = 0;
 	plf::nanotimer mAppTimer;
 	bool mFirstRun = true;
 	bool mPingsStarted = false;
 	bool mShowAllData = true;
-	bool mDarkMode = true;
 	int mIntervalBoxWidth = 40;
 	SDL_Window* mSDLWindow;
 	SDL_Surface* mIconSurface;
+	ImVec4 mCustomBackgroundColour = { 0.19f, 0.19f, 0.18f, 0.9f };
+	ImVec4 mCustomColour = { 0.95f, 0.6f, 0.2f, 0.8f };
+	ImVec4 mCustomColourFull = { mCustomColour.x, mCustomColour.y, mCustomColour.z, 1 };
+	ImVec4 mCustomColourDim = { mCustomColour.x, mCustomColour.y, mCustomColour.z, 0.6 };
+	ImVec4 mCustomColourDimmer = { mCustomColour.x, mCustomColour.y, mCustomColour.z, 0.4 };
+
 };
 
 struct WorkerThread

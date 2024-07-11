@@ -93,6 +93,12 @@ int main(int, char**)
 				done = true;
 			if (event.type == SDL_EVENT_WINDOW_CLOSE_REQUESTED && event.window.windowID == SDL_GetWindowID(window))
 				done = true;
+			if (event.type == SDL_EVENT_WINDOW_MINIMIZED)
+				app->mMinimised = true;
+			if (event.type == SDL_EVENT_WINDOW_MAXIMIZED)
+				app->mMinimised = false;
+			if (event.type == SDL_EVENT_WINDOW_RESTORED)
+				app->mMinimised = false;
 		}
 
 		// Start the Dear ImGui frame
