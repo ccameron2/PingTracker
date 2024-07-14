@@ -36,7 +36,7 @@ private:
 
 	float* mCurrentTime;
 	float* mPingTimes;
-	int mThreadSleepTime = 10;
+	int mThreadSleepTime = 5;
 	int mMaxDataDisplay = 500;
 	int mMaxDataUIInput = 500;
 	float mCumulativePing = 0.0f;

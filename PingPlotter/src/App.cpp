@@ -206,7 +206,6 @@ void App::RenderAppUI()
             {
                 ImGui::PushItemFlag(ImGuiItemFlags_Disabled, true);
                 ImGui::PushStyleVar(ImGuiStyleVar_Alpha, ImGui::GetStyle().Alpha * 0.5f);
-                mMaxDataDisplay = mPingCount;
 
             }
 
@@ -222,14 +221,14 @@ void App::RenderAppUI()
             ////
 
         	ImGuiIO& io = ImGui::GetIO();
-            ImGui::Text("Average ping: %.2f ms", mCumulativePing / mMaxDataDisplay);
+            ImGui::Text("Average ping: %.2f ms", mCumulativePing / mPingCount);
 #ifdef _DEBUG
             ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / io.Framerate, io.Framerate);
 #endif
             ImGui::End();
         }
 
-        int dataDisplay = mMaxDataDisplay;
+        int dataDisplay;
 
         // Ping / time line graph
         {
@@ -246,7 +245,7 @@ void App::RenderAppUI()
                     ImPlot::SetupAxes("Time (s)", "Ping (ms)", ImPlotAxisFlags_AutoFit, ImPlotAxisFlags_AutoFit);
 
                     // Get segment of data to display from data arrays
-                    if (mPingCount < mMaxDataDisplay)
+                    if (mPingCount < mMaxDataDisplay || mShowAllData)
                     {
                         dataDisplay = mPingCount;
                     }
@@ -255,10 +254,10 @@ void App::RenderAppUI()
                         dataDisplay = mMaxDataDisplay;
                     }
 
-                    auto* currentTimeDisplay = new float[mMaxDataDisplay];
-                    auto* pingTimesDisplay = new float[mMaxDataDisplay];
+                    auto* currentTimeDisplay = new float[dataDisplay];
+                    auto* pingTimesDisplay = new float[dataDisplay];
 
-                    if (mPingCount > dataDisplay)
+                    if (mPingCount >= dataDisplay)
                     {
                         for (int i = 0; i < dataDisplay; i++)
                         {
@@ -314,6 +313,7 @@ void App::Thread()
 void App::ClearVisualiser()
 {
     mPingCount = 0;
+    mCumulativePing = 0;
 }
 
 void App::LoadWindowIcon()
