@@ -1,0 +1,4 @@
+Place your built exe with it's required files in a folder with the same name.
+Edit the .bat file pair you want, the non-admin ones install to the user's folder instead of program files.
+Place your install bat file next to the folder containing your exe.
+Place your uninstall bat file inside the folder, next to your exe.
