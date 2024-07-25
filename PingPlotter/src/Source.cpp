@@ -22,16 +22,10 @@
 #endif
 
 // Main code
-int main(int, char**)
+int main(int argc, char* argv[])
 {
 {
-
-	//// Setup SDL
-	//if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER | SDL_INIT_GAMEPAD) != 0)
-	//{
-	//	printf("Error: SDL_Init(): %s\n", SDL_GetError());
-	//	return -1;
-	//}
+	// Setup SDL
 	SDL_SetHint(SDL_HINT_RENDER_VSYNC, "1");
 
 
@@ -44,11 +38,6 @@ int main(int, char**)
 	SDL_CreateWindowAndRenderer("Ping Plotter", 1280, 720, window_flags, &window, &renderer);
 	SDL_SetWindowPosition(window, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);
 	SDL_ShowWindow(window);
-
-	App* app = new App(window);
-
-	//SDL_Surface* icon = IMG_Load_RW("icon.png");
-	//SDL_SetWindowIcon(sdlWindow, icon);
 
 	// Setup Dear ImGui context
 	IMGUI_CHECKVERSION();
@@ -75,16 +64,13 @@ int main(int, char**)
 	// Our state
 	ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 
+	App* app = new App(*window, argv);
+
 	// Main loop
 	bool done = false;
 
 	while (!done)
 	{
-		// Poll and handle events (inputs, window resize, etc.)
-		// You can read the io.WantCaptureMouse, io.WantCaptureKeyboard flags to tell if dear imgui wants to use your inputs.
-		// - When io.WantCaptureMouse is true, do not dispatch mouse input data to your main application, or clear/overwrite your copy of the mouse data.
-		// - When io.WantCaptureKeyboard is true, do not dispatch keyboard input data to your main application, or clear/overwrite your copy of the keyboard data.
-		// Generally you may always pass all inputs to dear imgui, and hide them from your application based on those two flags.
 		SDL_Event event;
 		while (SDL_PollEvent(&event))
 		{
