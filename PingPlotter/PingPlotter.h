@@ -15,7 +15,7 @@ struct WorkerThread
 };
 static WorkerThread mWorker;
 
-const int MAX_INTERVAL_MS = 100000;
+const int MAX_INTERVAL_MS = 10000;
 const int MIN_INTERVAL_MS = 1;
 
 const int MAX_DATAPOINTS = 100000;
@@ -35,17 +35,20 @@ private:
 	void ClearVisualiser();
 	double PingAddress();
 
+	bool mShowControlPanel = false;
 	float* mCurrentTime;
 	float* mPingTimes;
 	int mThreadSleepTime = 5;
-	int mMaxDataDisplay = 500;
-	int mMaxDataUIInput = 500;
+	int mMaxDataDisplay = 1500;
+	int mMaxDataUIInput = 1500;
 	float mCumulativePing = 0.0f;
+	float mMaxPing = 0.0f;
+	float mMinPing = 999999.0f;
 	int mPingCount = 0;
 	plf::nanotimer mAppTimer;
 	bool mPingsStarted = false;
-	bool mShowAllData = true;
-	int mIntervalBoxWidth = 40;
+	bool mShowAllData = false;
+	int mIntervalBoxWidth = 20;
 	SDL_Window* mSDLWindow;
 };
 

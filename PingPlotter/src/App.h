@@ -9,26 +9,20 @@
 class App
 {
 public:
-	App(SDL_Window& window, char** argv);
+	App();
+	~App();
 
-	void Update();
-
-	double PingAddress();
-	void RenderAppUI();
-	ImVec4 GetClearColour() { return clear_color; }
-	bool mMinimised = false;
-
+	bool Update();
 private:
-	bool show_demo_window = true;
-	bool show_another_window = false;
-	ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
+	SDL_Window* mWindow;
+	SDL_Renderer* mRenderer;
+
+	bool mMinimised = false;
+	ImVec4 mClearColour = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
+
+	ImGuiIO* mIO;
 
 	std::unique_ptr<AppIcon> mAppIcon;
 	std::unique_ptr<AppColours> mAppColours;
-
 	std::unique_ptr<PingPlotter> mPingPlotter;
 };
-
-
-
-

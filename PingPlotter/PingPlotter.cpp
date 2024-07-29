@@ -87,6 +87,7 @@ void PingPlotter::RenderAppUI()
         //}
 
         // Control panel
+        if (mShowControlPanel)
         {
 #ifdef _DEBUG
             ImGui::Begin("Controls");
@@ -106,15 +107,39 @@ void PingPlotter::RenderAppUI()
             }
 
             ImGui::SameLine();
-            ImGui::PushItemWidth(mIntervalBoxWidth);
 
+            ImGui::PushItemWidth(mIntervalBoxWidth);
             if (ImGui::InputInt("Interval", &mThreadSleepTime, -1, -1))
             {
                 if (mThreadSleepTime > MAX_INTERVAL_MS) mThreadSleepTime = MAX_INTERVAL_MS;
                 if (mThreadSleepTime < MIN_INTERVAL_MS) mThreadSleepTime = MIN_INTERVAL_MS;
-            }
 
-            // Max data limit slider
+                if (mThreadSleepTime < 10)
+                {
+                    mIntervalBoxWidth = 20;
+                }
+                else if (mThreadSleepTime >= 10)
+                {
+                    mIntervalBoxWidth = 30;
+                }
+                else if (mThreadSleepTime >= 100)
+                {
+                    mIntervalBoxWidth = 40;
+                }
+                else if (mThreadSleepTime >= 1000)
+                {
+                    mIntervalBoxWidth = 60;
+                }
+                else if (mThreadSleepTime == MAX_INTERVAL_MS)
+                {
+                    mIntervalBoxWidth = 70;
+                }
+            }
+            ImGui::SameLine();
+            ImGuiIO& io = ImGui::GetIO();
+            ImGui::Text("| Perf: %.3f ms (%.1f FPS)", 1000.0f / io.Framerate, io.Framerate);
+
+        	// Max data limit slider
             if (mShowAllData)
             {
                 ImGui::PushItemFlag(ImGuiItemFlags_Disabled, true);
@@ -133,11 +158,6 @@ void PingPlotter::RenderAppUI()
             }
             ////
 
-            ImGuiIO& io = ImGui::GetIO();
-            ImGui::Text("Average ping: %.2f ms", mCumulativePing / mPingCount);
-#ifdef _DEBUG
-            ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / io.Framerate, io.Framerate);
-#endif
             ImGui::End();
         }
 
@@ -176,6 +196,8 @@ void PingPlotter::RenderAppUI()
                         currentTimeDisplay[i] = mCurrentTime[i + offset];
                         pingTimesDisplay[i] = mPingTimes[i + offset];
                         cumulativePing += pingTimesDisplay[i];
+                        if (pingTimesDisplay[i] > mMaxPing) mMaxPing = pingTimesDisplay[i];
+                        if (pingTimesDisplay[i] < mMinPing) mMinPing = pingTimesDisplay[i];
                     }
                 }
                 else
@@ -185,6 +207,8 @@ void PingPlotter::RenderAppUI()
                         currentTimeDisplay[i] = mCurrentTime[i];
                         pingTimesDisplay[i] = mPingTimes[i];
                         cumulativePing += pingTimesDisplay[i];
+                        if (pingTimesDisplay[i] > mMaxPing) mMaxPing = pingTimesDisplay[i];
+                        if (pingTimesDisplay[i] < mMinPing) mMinPing = pingTimesDisplay[i];
                     }
                 }
                 mCumulativePing = cumulativePing;
@@ -200,10 +224,33 @@ void PingPlotter::RenderAppUI()
 
                 ImPlot::EndPlot();
             }
-            
             ImGui::End();
         }
 
+        {
+            ImGui::Begin("Stats",nullptr,ImGuiWindowFlags_NoScrollbar);
+
+            ImGui::Text("Average ping: %.2fms", mCumulativePing / mPingCount);
+
+        	ImGui::SameLine();
+            ImGui::Text("| Max ping: %.2fms", mMaxPing);
+
+            ImGui::SameLine();
+            ImGui::Text("| Min ping: %.2fms", mMinPing);
+
+
+            ImGui::SameLine();
+            ImGui::Text("| Total time: %.2fs", mAppTimer.get_elapsed_ms() / 1000.0f);
+
+        	ImGui::SameLine();
+            ImGui::Checkbox("| Show Controls", &mShowControlPanel);
+
+        	ImGui::SameLine();
+#ifdef _DEBUG
+
+#endif
+            ImGui::End();
+        }
     }
 
 }
@@ -223,10 +270,11 @@ void PingPlotter::Thread()
 
 void PingPlotter::ClearVisualiser()
 {
-    mPingCount = 0;
-    mCumulativePing = 0;
+    mPingCount = 0.0f;
+    mCumulativePing = 0.0f;
+    mMaxPing = 0.0f;
+    mMinPing = 999999.0f;
 }
-
 
 double PingPlotter::PingAddress()
 {
