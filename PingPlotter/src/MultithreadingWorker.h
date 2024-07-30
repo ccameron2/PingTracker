@@ -11,7 +11,7 @@ public:
 	void SetThreadSleepTime(int newTime) { mThreadSleepTime = newTime; }
 	int* GetThreadSleepTime() { return &mThreadSleepTime; }
 private:
-	static void Thread();
+	void Thread();
 	double PingAddress();
 
 	int mThreadSleepTime = 5;
@@ -23,6 +23,6 @@ private:
 		bool completed = true;
 		bool running = true;
 	};
-	static WorkerThread mWorker;
+	WorkerThread mWorker;
 };
 

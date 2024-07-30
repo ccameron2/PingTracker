@@ -6,6 +6,9 @@
 #include <thread>
 #include <SDL3/SDL.h>
 
+#include "AppColours.h"
+#include "MultithreadingWorker.h"
+
 struct WorkerThread
 {
 	std::thread thread;
@@ -24,31 +27,40 @@ const int INITIAL_DATA_TO_VIEW = 500;
 class PingPlotter
 {
 public:
-	PingPlotter();
+	PingPlotter(AppColours& appColours);
 	~PingPlotter();
 
 	bool Update();
 	void RenderAppUI();
 
 private:
-	void Thread();
 	void ClearVisualiser();
-	double PingAddress();
 
 	bool mShowControlPanel = false;
 	float* mCurrentTime;
 	float* mPingTimes;
 	int mThreadSleepTime = 5;
-	int mMaxDataDisplay = 1500;
+
+	int mMaxDataDisplaySize = 1500;
+	int mPreviousDataDisplaySize = 1500;
+
+	int mDataDisplaySize = 1500;
 	int mMaxDataUIInput = 1500;
 	float mCumulativePing = 0.0f;
 	float mMaxPing = 0.0f;
 	float mMinPing = 999999.0f;
+
+	float* mPingDataDisplay;
+	float* mTimeDataDisplay;
+
 	int mPingCount = 0;
 	plf::nanotimer mAppTimer;
 	bool mPingsStarted = false;
 	bool mShowAllData = false;
-	int mIntervalBoxWidth = 20;
+	int mIntervalBoxWidth = 30;
+	int mColourPickerWidth = 80;
 	SDL_Window* mSDLWindow;
+	AppColours& mAppColoursRef;
+	std::unique_ptr<MultithreadingWorker> mMultithreadingWorker;
 };
 

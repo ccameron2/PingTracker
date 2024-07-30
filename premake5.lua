@@ -89,13 +89,14 @@ project "PingPlotter"
         
         files { 'PingPlotter/PingPlotter.rc', '**.ico' }
         vpaths { ['Resources/*'] = { '*.rc', '**.ico' }}
+        removefiles("%{prj.name}/src/Icon.h","%{prj.name}/src/Icon.cpp","%{prj.name}/src/AppIcon.h","%{prj.name}/src/AppIcon.cpp")
 
     filter "system:macosx"
         kind "WindowedApp"
 
     filter "system:linux"
         kind "WindowedApp"
-
+    
     filter "configurations:Debug"
         runtime "Debug"
         symbols "on"

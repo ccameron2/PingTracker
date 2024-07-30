@@ -4,7 +4,7 @@
 
 #include "AppIcon.h"
 #include "AppColours.h"
-#include "PingPlotter/PingPlotter.h"
+#include "PingPlotter.h"
 
 class App
 {

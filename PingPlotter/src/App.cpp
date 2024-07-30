@@ -53,8 +53,8 @@ App::App()
     mAppIcon = std::make_unique<AppIcon>(window);
 #endif
 
-    mAppColours = std::make_unique<AppColours>();
-    mPingPlotter = std::make_unique<PingPlotter>();
+    mAppColours = std::make_unique<AppColours>(UIColour::Orange);
+    mPingPlotter = std::make_unique<PingPlotter>(*mAppColours.get());
 }
 
 App::~App()

@@ -3,16 +3,23 @@
 #include "App.h"
 #include "ImGuiProgressIndicators.h"
 #include "implot.h"
+#include "MultithreadingWorker.h"
 
-PingPlotter::PingPlotter()
+PingPlotter::PingPlotter(AppColours& appColoursRef) : mAppColoursRef(appColoursRef)
 {
+
     mAppTimer.start();
+
     mCurrentTime = new float[MAX_DATAPOINTS];
     mPingTimes = new float[MAX_DATAPOINTS];
+
+    mPingDataDisplay = new float[mDataDisplaySize];
+    mTimeDataDisplay = new float[mDataDisplaySize];
+
     for (int i = 0; i < MAX_DATAPOINTS; i++) { mCurrentTime[i] = 0; mPingTimes[i] = 0; }
 
-    mWorker.thread = std::thread(&PingPlotter::Thread, this);
-    mWorker.onCompleteCallback = [this](double result, bool& completed)
+    // Start multithreading worker and provide a callback
+    mMultithreadingWorker = std::make_unique<MultithreadingWorker>([this](double result, bool& completed)
         {
             completed = true;
             mPingTimes[mPingCount] = result;
@@ -28,21 +35,68 @@ PingPlotter::PingPlotter()
             {
                 mPingCount++;
             }
-        };
+        });
 }
 
 PingPlotter::~PingPlotter()
 {
-    mWorker.running = false;
-    mWorker.thread.join();
+    mMultithreadingWorker.reset();
     delete[] mCurrentTime;
     delete[] mPingTimes;
+    delete[] mPingDataDisplay;
+    delete[] mTimeDataDisplay;
 }
 
 bool PingPlotter::Update()
 {
+    float cumulativePing = 0;
+
+    // Get segment of data to display from data arrays
+    if (mPingCount < mMaxDataDisplaySize || mShowAllData)
+    {
+        mDataDisplaySize = mPingCount;
+    }
+    else
+    {
+        mDataDisplaySize = mMaxDataDisplaySize;
+    }
+
+    if (mDataDisplaySize != mPreviousDataDisplaySize)
+    {
+        delete[] mPingDataDisplay;
+        delete[] mTimeDataDisplay;
+        mPingDataDisplay = new float[mDataDisplaySize];
+        mTimeDataDisplay = new float[mDataDisplaySize];
+    }
+
+    if (mPingCount >= mDataDisplaySize)
+    {
+        for (int i = 0; i < mDataDisplaySize; i++)
+        {
+            auto offset = mPingCount - mDataDisplaySize;
+            mTimeDataDisplay[i] = mCurrentTime[i + offset];
+            mPingDataDisplay[i] = mPingTimes[i + offset];
+            cumulativePing += mPingDataDisplay[i];
+            if (mPingDataDisplay[i] > mMaxPing) mMaxPing = mPingDataDisplay[i];
+            if (mPingDataDisplay[i] < mMinPing) mMinPing = mPingDataDisplay[i];
+        }
+    }
+    else
+    {
+        for (int i = 0; i < mDataDisplaySize; i++)
+        {
+            mTimeDataDisplay[i] = mCurrentTime[i];
+            mPingDataDisplay[i] = mPingTimes[i];
+            cumulativePing += mPingDataDisplay[i];
+            if (mPingDataDisplay[i] > mMaxPing) mMaxPing = mPingDataDisplay[i];
+            if (mPingDataDisplay[i] < mMinPing) mMinPing = mPingDataDisplay[i];
+        }
+    }
+    mCumulativePing = cumulativePing;
+
     RenderAppUI();
-    return 1;
+
+    return true;
 }
 
 void PingPlotter::RenderAppUI()
@@ -79,12 +133,11 @@ void PingPlotter::RenderAppUI()
     }
     else
     {
-        float cumulativePing = 0;
 
-        //{
-        //    static bool showDemoWindow = false;
-        //    ImGui::ShowDemoWindow(&showDemoWindow);
-        //}
+        {
+            //static bool showDemoWindow = false;
+            //ImGui::ShowDemoWindow(&showDemoWindow);
+        }
 
         // Control panel
         if (mShowControlPanel)
@@ -96,7 +149,7 @@ void PingPlotter::RenderAppUI()
 #endif
             if (ImGui::Checkbox("View All", &mShowAllData))
             {
-                mMaxDataDisplay = INITIAL_DATA_TO_VIEW;
+                mMaxDataDisplaySize = INITIAL_DATA_TO_VIEW;
             }
 
             ImGui::SameLine();
@@ -109,35 +162,25 @@ void PingPlotter::RenderAppUI()
             ImGui::SameLine();
 
             ImGui::PushItemWidth(mIntervalBoxWidth);
-            if (ImGui::InputInt("Interval", &mThreadSleepTime, -1, -1))
+            if (ImGui::InputInt("Interval ms", &mThreadSleepTime, -1, -1))
             {
                 if (mThreadSleepTime > MAX_INTERVAL_MS) mThreadSleepTime = MAX_INTERVAL_MS;
                 if (mThreadSleepTime < MIN_INTERVAL_MS) mThreadSleepTime = MIN_INTERVAL_MS;
-
-                if (mThreadSleepTime < 10)
-                {
-                    mIntervalBoxWidth = 20;
-                }
-                else if (mThreadSleepTime >= 10)
-                {
-                    mIntervalBoxWidth = 30;
-                }
-                else if (mThreadSleepTime >= 100)
-                {
-                    mIntervalBoxWidth = 40;
-                }
-                else if (mThreadSleepTime >= 1000)
-                {
-                    mIntervalBoxWidth = 60;
-                }
-                else if (mThreadSleepTime == MAX_INTERVAL_MS)
-                {
-                    mIntervalBoxWidth = 70;
-                }
+                mMultithreadingWorker->SetThreadSleepTime(mThreadSleepTime);
             }
+
             ImGui::SameLine();
+
             ImGuiIO& io = ImGui::GetIO();
             ImGui::Text("| Perf: %.3f ms (%.1f FPS)", 1000.0f / io.Framerate, io.Framerate);
+
+            ImGui::SameLine();
+
+            ImGui::Text("| Colour");
+
+            ImGui::SameLine();
+            ImGui::PushItemWidth(mColourPickerWidth);
+            mAppColoursRef.RenderColourPicker();
 
         	// Max data limit slider
             if (mShowAllData)
@@ -148,8 +191,7 @@ void PingPlotter::RenderAppUI()
             }
 
             ImGui::PushItemWidth(ImGui::GetWindowWidth());
-            ImGui::SliderInt("Max data", &mMaxDataDisplay, 5, mPingCount > INITIAL_DATA_TO_VIEW ? mPingCount : INITIAL_DATA_TO_VIEW);
-
+            ImGui::SliderInt("Max data", &mMaxDataDisplaySize, 5, mPingCount > INITIAL_DATA_TO_VIEW ? mPingCount : INITIAL_DATA_TO_VIEW);
 
             if (mShowAllData)
             {
@@ -157,11 +199,11 @@ void PingPlotter::RenderAppUI()
                 ImGui::PopStyleVar();
             }
             ////
+            ///
+
 
             ImGui::End();
         }
-
-        int dataDisplay;
 
         // Ping / time line graph
         {
@@ -175,52 +217,11 @@ void PingPlotter::RenderAppUI()
             {
                 ImPlot::SetupAxes("Time (s)", "Ping (ms)", ImPlotAxisFlags_AutoFit, ImPlotAxisFlags_AutoFit);
 
-                // Get segment of data to display from data arrays
-                if (mPingCount < mMaxDataDisplay || mShowAllData)
-                {
-                    dataDisplay = mPingCount;
-                }
-                else
-                {
-                    dataDisplay = mMaxDataDisplay;
-                }
+                ImPlot::PushStyleColor(ImPlotCol_Line, mAppColoursRef.GetColour());
 
-                auto* currentTimeDisplay = new float[dataDisplay];
-                auto* pingTimesDisplay = new float[dataDisplay];
-
-                if (mPingCount >= dataDisplay)
-                {
-                    for (int i = 0; i < dataDisplay; i++)
-                    {
-                        auto offset = mPingCount - dataDisplay;
-                        currentTimeDisplay[i] = mCurrentTime[i + offset];
-                        pingTimesDisplay[i] = mPingTimes[i + offset];
-                        cumulativePing += pingTimesDisplay[i];
-                        if (pingTimesDisplay[i] > mMaxPing) mMaxPing = pingTimesDisplay[i];
-                        if (pingTimesDisplay[i] < mMinPing) mMinPing = pingTimesDisplay[i];
-                    }
-                }
-                else
-                {
-                    for (int i = 0; i < dataDisplay; i++)
-                    {
-                        currentTimeDisplay[i] = mCurrentTime[i];
-                        pingTimesDisplay[i] = mPingTimes[i];
-                        cumulativePing += pingTimesDisplay[i];
-                        if (pingTimesDisplay[i] > mMaxPing) mMaxPing = pingTimesDisplay[i];
-                        if (pingTimesDisplay[i] < mMinPing) mMinPing = pingTimesDisplay[i];
-                    }
-                }
-                mCumulativePing = cumulativePing;
-
-                ImPlot::PushStyleColor(ImPlotCol_Line, { 0.95f, 0.6f, 0.2f, 0.8f });
-
-                ImPlot::PlotLine("My Line Plot", currentTimeDisplay, pingTimesDisplay, dataDisplay);
+                ImPlot::PlotLine("My Line Plot", mTimeDataDisplay, mPingDataDisplay, mDataDisplaySize);
 
                 ImPlot::PopStyleColor();
-
-                delete[] currentTimeDisplay;
-                delete[] pingTimesDisplay;
 
                 ImPlot::EndPlot();
             }
@@ -255,18 +256,6 @@ void PingPlotter::RenderAppUI()
 
 }
 
-void PingPlotter::Thread()
-{
-    while (mWorker.running)
-    {
-        if (mWorker.completed)
-        {
-            mWorker.completed = false;
-            mWorker.onCompleteCallback(PingAddress(), mWorker.completed);
-            std::this_thread::sleep_for(std::chrono::milliseconds(mThreadSleepTime));
-        }
-    }
-}
 
 void PingPlotter::ClearVisualiser()
 {
@@ -274,10 +263,5 @@ void PingPlotter::ClearVisualiser()
     mCumulativePing = 0.0f;
     mMaxPing = 0.0f;
     mMinPing = 999999.0f;
-}
-
-double PingPlotter::PingAddress()
-{
-    icmplib::IPAddress ipAddress("8.8.8.8");
-    return Ping(ipAddress, ICMPLIB_TIMEOUT_1S).delay;
+    mAppTimer.start();
 }

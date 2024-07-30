@@ -1,14 +1,35 @@
 #pragma once
 #include "imgui.h"
 
+enum class UIColour
+{
+	Orange,
+	Purple,
+	Red,
+	Green,
+	Blue,
+	Yellow,
+	Grey,
+	Pink
+};
+
 class AppColours
 {
 public:
-	AppColours();
+	AppColours(UIColour colour);
 
-	ImVec4 GetColours() const { return mCustomColour; };
+
+	ImVec4 GetColour() const { return mCustomColour; }
+
+	void SetStyle(UIColour colour);
+	void RenderColourPicker();
 private:
 	void SetColours();
+
+	UIColour mCurrentColour;
+	const char* mColourNames[8] = { "Orange", "Purple", "Red", "Green", "Blue", "Yellow", "Grey", "Pink" };
+	const char* mCurrentColourName = mColourNames[static_cast<int>(mCurrentColour)];
+
 	ImVec4 mCustomColour = { 0.95f, 0.6f, 0.2f, 0.8f };
 	ImVec4 mCustomBackgroundColour = { 0.19f, 0.19f, 0.18f, 0.9f };
 	ImVec4 mCustomColourFull = { mCustomColour.x, mCustomColour.y, mCustomColour.z, 1 };
