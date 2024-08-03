@@ -1,48 +1,89 @@
 #include "AppColours.h"
 
+#include <fstream>
+#include <iostream>
+
 
 AppColours::AppColours(UIColour colour) : mCurrentColour(colour)
 {
-    SetStyle(colour);
+    UIColour finalColour = colour;
+    std::ifstream settingsFile("PingPlotterConfigColour.ini", std::ios::binary);
+    if(settingsFile.is_open())
+    {
+        std::string inColour;
+        settingsFile >> inColour;
+        
+        if(inColour == "Orange")
+            finalColour = UIColour::Orange;
+
+        if(inColour == "Purple")
+            finalColour = UIColour::Purple;
+
+        if(inColour == "Red")
+            finalColour = UIColour::Red;
+
+        if(inColour == "Green")
+            finalColour = UIColour::Green;
+
+        if(inColour == "Blue")
+            finalColour = UIColour::Blue;
+
+        if(inColour == "Yellow")
+            finalColour = UIColour::Yellow;
+
+        if(inColour == "Grey")
+            finalColour = UIColour::Grey;
+
+        if(inColour == "Pink")
+            finalColour = UIColour::Pink;
+    }
+    SetStyle(finalColour);
 }
 
 void AppColours::SetStyle(UIColour colour)
 {
+
+    std::ofstream settingsFile("PingPlotterConfigColour.ini", std::ios::binary | std::ofstream::trunc);
+    std::string colourString = "Orange";
+
     switch(colour)
     {
         case UIColour::Orange:
             mCustomColour = { 0.95f, 0.6f, 0.2f, 0.8f };
+            colourString = "Orange";
             break;
-
         case UIColour::Purple:
-            mCustomColour = { 0.5f, 0.0f, 0.5f, 0.8f };
+            mCustomColour = { 0.7f, 0.4f, 0.7f, 0.8f };
+            colourString = "Purple";
             break;
-
         case UIColour::Red:
-            mCustomColour = { 1.0f, 0.0f, 0.0f, 0.8f };
+            mCustomColour = { 0.95f, 0.3f, 0.3f, 0.8f };
+            colourString = "Red";
             break;
-
         case UIColour::Green:
-            mCustomColour = { 0.0f, 1.0f, 0.0f, 0.8f };
+            mCustomColour = { 0.4f, 0.8f, 0.4f, 0.8f };
+            colourString = "Green";
             break;
-
         case UIColour::Blue:
-            mCustomColour = { 0.0f, 0.0f, 1.0f, 0.8f };
+            mCustomColour = { 0.3f, 0.5f, 0.95f, 0.8f };
+            colourString = "Blue";
             break;
-
         case UIColour::Yellow:
-            mCustomColour = { 1.0f, 1.0f, 0.0f, 0.8f };
+            mCustomColour = { 0.95f, 0.9f, 0.4f, 0.8f };
+            colourString = "Yellow";
             break;
-
         case UIColour::Grey:
-            mCustomColour = { 0.5f, 0.5f, 0.5f, 0.8f };
+            mCustomColour = { 0.7f, 0.7f, 0.7f, 0.8f };
+            colourString = "Grey";
             break;
-
         case UIColour::Pink:
-            mCustomColour = { 1.0f, 0.41f, 0.71f, 0.8f };
+            mCustomColour = { 0.95f, 0.6f, 0.75f, 0.8f };
+            colourString = "Pink";
             break;
     }
 
+    colourString += "\n";
+    settingsFile.write(colourString.data(), sizeof(colourString));
     mCustomColourFull = { mCustomColour.x, mCustomColour.y, mCustomColour.z, 1 };
     mCustomColourDim = { mCustomColour.x, mCustomColour.y, mCustomColour.z, 0.6 };
     mCustomColourDimmer = { mCustomColour.x, mCustomColour.y, mCustomColour.z, 0.4 };

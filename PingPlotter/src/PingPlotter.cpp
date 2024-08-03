@@ -65,8 +65,8 @@ bool PingPlotter::Update()
     {
         delete[] mPingDataDisplay;
         delete[] mTimeDataDisplay;
-        mPingDataDisplay = new float[mDataDisplaySize];
-        mTimeDataDisplay = new float[mDataDisplaySize];
+        mPingDataDisplay = new float[mDataDisplaySize + 1];
+        mTimeDataDisplay = new float[mDataDisplaySize + 1];
     }
 
     if (mPingCount >= mDataDisplaySize)
@@ -133,7 +133,6 @@ void PingPlotter::RenderAppUI()
     }
     else
     {
-
         {
             //static bool showDemoWindow = false;
             //ImGui::ShowDemoWindow(&showDemoWindow);
@@ -187,20 +186,18 @@ void PingPlotter::RenderAppUI()
             {
                 ImGui::PushItemFlag(ImGuiItemFlags_Disabled, true);
                 ImGui::PushStyleVar(ImGuiStyleVar_Alpha, ImGui::GetStyle().Alpha * 0.5f);
-
             }
 
-            ImGui::PushItemWidth(ImGui::GetWindowWidth());
+        	ImGui::PushItemWidth(ImGui::GetWindowWidth());
             ImGui::SliderInt("Max data", &mMaxDataDisplaySize, 5, mPingCount > INITIAL_DATA_TO_VIEW ? mPingCount : INITIAL_DATA_TO_VIEW);
 
-            if (mShowAllData)
+        	if (mShowAllData)
             {
                 ImGui::PopItemFlag();
                 ImGui::PopStyleVar();
             }
-            ////
             ///
-
+            ///
 
             ImGui::End();
         }

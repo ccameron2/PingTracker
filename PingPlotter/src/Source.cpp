@@ -12,7 +12,7 @@ int main(int argc, char* argv[])
 {
 	std::unique_ptr<App> app = std::make_unique<App>();
 
-	while(!app->Update());
+	while (!app->Update());
 
     return 0;
 }
