@@ -84,7 +84,8 @@ project "PingPlotter"
         
         postbuildcommands
         {
-            "{COPY} src/PingPlotterConfig.ini ../bin/" .. outputdir .. "/%{prj.name}"
+            "{COPY} src/PingPlotterConfig.ini ../bin/" .. outputdir .. "/%{prj.name}",
+            "{COPY} Roboto-Regular.ttf ../bin/" .. outputdir .. "/%{prj.name}"
         }
         
         files { 'PingPlotter/PingPlotter.rc', '**.ico' }

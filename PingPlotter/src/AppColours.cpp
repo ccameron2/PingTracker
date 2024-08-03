@@ -4,9 +4,9 @@
 #include <iostream>
 
 
-AppColours::AppColours(UIColour colour) : mCurrentColour(colour)
+AppColours::AppColours()
 {
-    UIColour finalColour = colour;
+    UIColour finalColour = UIColour::Orange;
     std::ifstream settingsFile("PingPlotterConfigColour.ini", std::ios::binary);
     if(settingsFile.is_open())
     {
@@ -45,6 +45,7 @@ void AppColours::SetStyle(UIColour colour)
 
     std::ofstream settingsFile("PingPlotterConfigColour.ini", std::ios::binary | std::ofstream::trunc);
     std::string colourString = "Orange";
+    mCurrentColour = colour;
 
     switch(colour)
     {
@@ -84,9 +85,13 @@ void AppColours::SetStyle(UIColour colour)
 
     colourString += "\n";
     settingsFile.write(colourString.data(), sizeof(colourString));
+    settingsFile.close();
+
     mCustomColourFull = { mCustomColour.x, mCustomColour.y, mCustomColour.z, 1 };
     mCustomColourDim = { mCustomColour.x, mCustomColour.y, mCustomColour.z, 0.6 };
     mCustomColourDimmer = { mCustomColour.x, mCustomColour.y, mCustomColour.z, 0.4 };
+
+    mCurrentColourName = mColourNames[static_cast<int>(mCurrentColour)];
     SetColours();
 }
 
@@ -162,5 +167,4 @@ void AppColours::SetColours()
 
     ImGuiStyle& style = ImGui::GetStyle();
     style.FrameRounding = 4.0f;
-
 }

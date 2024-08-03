@@ -41,7 +41,6 @@ App::App()
 	io.ConfigDebugIsDebuggerPresent = true;
 #endif
 
-
 	// Setup Dear ImGui style
 	ImGui::StyleColorsDark();
 
@@ -49,11 +48,13 @@ App::App()
 	ImGui_ImplSDL3_InitForSDLRenderer(mWindow, mRenderer);
 	ImGui_ImplSDLRenderer3_Init(mRenderer);
 
+	io.Fonts->AddFontFromFileTTF("Roboto-Regular.ttf", 16.0f);
+	\
 #ifndef WINDOWS
     mAppIcon = std::make_unique<AppIcon>(window);
 #endif
 
-    mAppColours = std::make_unique<AppColours>(UIColour::Orange);
+    mAppColours = std::make_unique<AppColours>();
     mPingPlotter = std::make_unique<PingPlotter>(*mAppColours.get());
 }
 
