@@ -1,5 +1,7 @@
 #include "PingPlotter.h"
 
+#include <fstream>
+
 #include "App.h"
 #include "ImGuiProgressIndicators.h"
 #include "implot.h"
@@ -65,7 +67,7 @@ bool PingPlotter::Update()
     {
         delete[] mPingDataDisplay;
         delete[] mTimeDataDisplay;
-        mPingDataDisplay = new float[mDataDisplaySize + 1];
+        mPingDataDisplay = new float[mDataDisplaySize + 1]; // TODO Heap corruption fix?
         mTimeDataDisplay = new float[mDataDisplaySize + 1];
     }
 
@@ -76,6 +78,7 @@ bool PingPlotter::Update()
             auto offset = mPingCount - mDataDisplaySize;
             mTimeDataDisplay[i] = mCurrentTime[i + offset];
             mPingDataDisplay[i] = mPingTimes[i + offset];
+
             cumulativePing += mPingDataDisplay[i];
             if (mPingDataDisplay[i] > mMaxPing) mMaxPing = mPingDataDisplay[i];
             if (mPingDataDisplay[i] < mMinPing) mMinPing = mPingDataDisplay[i];
@@ -87,6 +90,7 @@ bool PingPlotter::Update()
         {
             mTimeDataDisplay[i] = mCurrentTime[i];
             mPingDataDisplay[i] = mPingTimes[i];
+
             cumulativePing += mPingDataDisplay[i];
             if (mPingDataDisplay[i] > mMaxPing) mMaxPing = mPingDataDisplay[i];
             if (mPingDataDisplay[i] < mMinPing) mMinPing = mPingDataDisplay[i];
@@ -159,6 +163,18 @@ void PingPlotter::RenderAppUI()
             }
 
             ImGui::SameLine();
+            if (ImGui::Button("Output Data"))
+            {
+                OutputDataToCSV();
+                ImGui::OpenPopup("my_select_popup");
+            }
+            if (ImGui::BeginPopup("my_select_popup"))
+            {
+                ImGui::Text("Done!");
+                ImGui::EndPopup();
+            }
+
+            ImGui::SameLine();
 
             ImGui::PushItemWidth(mIntervalBoxWidth);
             if (ImGui::InputInt("Interval ms", &mThreadSleepTime, -1, -1))
@@ -170,16 +186,16 @@ void PingPlotter::RenderAppUI()
 
             ImGui::SameLine();
 
-            ImGuiIO& io = ImGui::GetIO();
-            ImGui::Text("| Perf: %.3f ms (%.1f FPS)", 1000.0f / io.Framerate, io.Framerate);
-
-            ImGui::SameLine();
-
             ImGui::Text("| Colour");
 
             ImGui::SameLine();
             ImGui::PushItemWidth(mColourPickerWidth);
             mAppColoursRef.RenderColourPicker();
+
+            ImGui::SameLine();
+
+            ImGuiIO& io = ImGui::GetIO();
+            ImGui::Text("| Perf: %.3f ms (%.1f FPS)", 1000.0f / io.Framerate, io.Framerate);
 
         	// Max data limit slider
             if (mShowAllData)
@@ -261,4 +277,14 @@ void PingPlotter::ClearVisualiser()
     mMaxPing = 0.0f;
     mMinPing = 999999.0f;
     mAppTimer.start();
+}
+
+void PingPlotter::OutputDataToCSV()
+{
+    std::ofstream outFile("Output.csv", std::ios::trunc);
+    for(int i = 0; i < mPingCount; i++)
+    {
+        outFile << mCurrentTime[i] << "," << mPingTimes[i] << "\n";
+    }
+    outFile.close();
 }

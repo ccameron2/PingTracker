@@ -36,6 +36,8 @@ public:
 private:
 	void ClearVisualiser();
 
+	void OutputDataToCSV();
+
 	bool mShowControlPanel = false;
 	float* mCurrentTime;
 	float* mPingTimes;
