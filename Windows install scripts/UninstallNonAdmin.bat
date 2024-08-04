@@ -4,7 +4,7 @@ cd /d "%~dp0"
 set "exeName=PingPlotter.exe"
 
 for %%I in ("%exeName%") do set "appName=%%~nI"
-set "installFolder=%USERPROFILE%\%appName%"
+set "installFolder=%USERPROFILE%\Documents\%appName%"
 
 echo This program will uninstall %appName% from your system.
 choice /C YN /M "Do you want to continue?"
