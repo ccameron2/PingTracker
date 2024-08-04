@@ -19,7 +19,7 @@ App::App()
 	SDL_SetHint(SDL_HINT_RENDER_VSYNC, "1");
 
 	// Create window with SDL_Renderer graphics context
-	Uint32 window_flags = SDL_WINDOW_RESIZABLE;
+	Uint32 window_flags = SDL_WINDOW_RESIZABLE | SDL_WINDOW_HIGH_PIXEL_DENSITY;
 
 	SDL_CreateWindowAndRenderer("Ping Plotter", 1280, 720, window_flags, &mWindow, &mRenderer);
 	SDL_SetWindowPosition(mWindow, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);
@@ -48,8 +48,8 @@ App::App()
 	ImGui_ImplSDL3_InitForSDLRenderer(mWindow, mRenderer);
 	ImGui_ImplSDLRenderer3_Init(mRenderer);
 
-	io.Fonts->AddFontFromFileTTF("Roboto-Regular.ttf", 16.0f);
-	\
+	io.Fonts->AddFontFromFileTTF("Aptos.ttf", 18.0f);
+	io.Fonts->ConfigData[0].RasterizerDensity = 3.0f;
 #ifndef WINDOWS
     mAppIcon = std::make_unique<AppIcon>(window);
 #endif
