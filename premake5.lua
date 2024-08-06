@@ -2,6 +2,7 @@ workspace "PingPlotter"
     platforms "x64"
     architecture "x64"
     startproject "PingPlotter"
+    dpiawareness "HighPerMonitor"
     
     configurations
     {

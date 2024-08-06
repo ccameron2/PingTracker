@@ -84,7 +84,7 @@ void AppColours::SetStyle(UIColour colour)
     }
 
     colourString += "\n";
-    settingsFile.write(colourString.data(), sizeof(colourString));
+    settingsFile.write(colourString.data(), colourString.size());
     settingsFile.close();
 
     mCustomColourFull = { mCustomColour.x, mCustomColour.y, mCustomColour.z, 1 };
