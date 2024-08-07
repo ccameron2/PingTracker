@@ -2,6 +2,10 @@
 
 #include <fstream>
 
+#ifdef WINDOWS
+#include <shlobj_core.h>
+#endif
+
 #include "App.h"
 #include "ImGuiProgressIndicators.h"
 #include "implot.h"
@@ -281,7 +285,20 @@ void PingPlotter::ClearVisualiser()
 
 void PingPlotter::OutputDataToCSV()
 {
-    std::ofstream outFile("Output.csv", std::ios::trunc);
+    std::string docsPath = "";
+#ifdef WINDOWS
+
+	PWSTR ppszPath;
+	HRESULT hr = SHGetKnownFolderPath(FOLDERID_Documents, 0, NULL, &ppszPath);
+
+	std::wstring wPath;
+	if (SUCCEEDED(hr)) wPath = ppszPath;
+
+	docsPath = std::string(wPath.begin(),wPath.end());
+    docsPath += "\\PingPlotter\\";
+
+#endif
+    std::ofstream outFile(docsPath + "Output.csv", std::ios::trunc);
     for(int i = 0; i < mPingCount; i++)
     {
         outFile << mCurrentTime[i] << "," << mPingTimes[i] << "\n";

@@ -31,6 +31,9 @@ mkdir "%installFolder%"
 echo Copying files...
 xcopy "%sourceFolder%\*" "%installFolder%\" /E /I /H /Y >nul
 
+echo Creating Documents folder...
+mkdir "%USERPROFILE%\Documents\%appName%"
+
 echo Creating shortcuts...
 powershell -Command "$ws = New-Object -ComObject WScript.Shell; $s = $ws.CreateShortcut('%USERPROFILE%\Desktop\%appName%.lnk'); $s.TargetPath = '%installFolder%\%exeName%'; $s.WorkingDirectory = '%installFolder%'; $s.Save()"
 powershell -Command "$ws = New-Object -ComObject WScript.Shell; $s = $ws.CreateShortcut('%APPDATA%\Microsoft\Windows\Start Menu\Programs\%appName%.lnk'); $s.TargetPath = '%installFolder%\%exeName%'; $s.WorkingDirectory = '%installFolder%'; $s.Save()"

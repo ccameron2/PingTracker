@@ -47,6 +47,9 @@ mkdir "%installFolder%"
 echo Creating AppData folder...
 mkdir "%APPDATA%\%appName%"
 
+echo Creating Documents folder...
+mkdir "%USERPROFILE%\Documents\%appName%"
+
 echo Copying files...
 xcopy "%sourceFolder%\*" "%installFolder%\" /E /I /H /Y >nul
 
