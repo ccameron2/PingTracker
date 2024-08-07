@@ -2,9 +2,12 @@
 
 #include "imgui.h"
 
-#include "AppIcon.h"
 #include "AppColours.h"
 #include "PingPlotter.h"
+
+#ifndef WINDOWS
+#include "AppIcon.h"
+#endif
 
 class App
 {
@@ -22,7 +25,10 @@ private:
 
 	ImGuiIO* mIO;
 
+#ifndef WINDOWS
 	std::unique_ptr<AppIcon> mAppIcon;
+#endif
+
 	std::unique_ptr<AppColours> mAppColours;
 	std::unique_ptr<PingPlotter> mPingPlotter;
 };

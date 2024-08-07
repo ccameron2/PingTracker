@@ -3,9 +3,6 @@
 #include <fstream>
 #include <iostream>
 
-#include "App.h"
-
-
 AppColours::AppColours()
 {
     UIColour finalColour = UIColour::Orange;
