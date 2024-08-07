@@ -4,7 +4,7 @@ cd /d "%~dp0"
 set "exeName=PingPlotter.exe"
 for %%I in ("%exeName%") do set "appName=%%~nI"
 set "sourceFolder=%~dp0%appName%"
-set "installFolder=%USERPROFILE%\Documents\%appName%"
+set "installFolder=%APPDATA%\%appName%"
 set "config1=PingPlotterConfig.ini"
 
 echo This program will install %appName% on your system.

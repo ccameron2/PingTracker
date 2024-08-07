@@ -36,6 +36,9 @@ if not exist "%installFolder%" (
 echo Removing installation folder...
 rmdir /s /q "%installFolder%"
 
+echo Removing AppData folder...
+rmdir /s /q "%APPDATA%\%appName%"
+
 echo Removing shortcuts...
 if exist "%USERPROFILE%\Desktop\%appName%.lnk" del "%USERPROFILE%\Desktop\%appName%.lnk"
 if exist "%APPDATA%\Microsoft\Windows\Start Menu\Programs\%appName%.lnk" del "%APPDATA%\Microsoft\Windows\Start Menu\Programs\%appName%.lnk"

@@ -3,11 +3,22 @@
 #include <fstream>
 #include <iostream>
 
+#include "App.h"
+
 
 AppColours::AppColours()
 {
     UIColour finalColour = UIColour::Orange;
-    std::ifstream settingsFile("PingPlotterConfigColour.ini", std::ios::binary);
+
+#ifdef WINDOWS
+    char* buffer = nullptr;
+    size_t size = 0;
+    _dupenv_s(&buffer, &size, "APPDATA");
+    mAppDataPath = std::string(buffer);
+    mAppDataPath += "\\PingPlotter\\";
+#endif
+
+    std::ifstream settingsFile(mAppDataPath + "PingPlotterConfigColour.ini", std::ios::binary);
     if(settingsFile.is_open())
     {
         std::string inColour;
@@ -43,7 +54,7 @@ AppColours::AppColours()
 void AppColours::SetStyle(UIColour colour)
 {
 
-    std::ofstream settingsFile("PingPlotterConfigColour.ini", std::ios::binary | std::ofstream::trunc);
+    std::ofstream settingsFile(mAppDataPath + "PingPlotterConfigColour.ini", std::ios::binary | std::ofstream::trunc);
     std::string colourString = "Orange";
     mCurrentColour = colour;
 
@@ -84,8 +95,12 @@ void AppColours::SetStyle(UIColour colour)
     }
 
     colourString += "\n";
-    settingsFile.write(colourString.data(), colourString.size());
-    settingsFile.close();
+
+    if(settingsFile.is_open())
+    {
+        settingsFile.write(colourString.data(), colourString.size());
+        settingsFile.close();
+    }
 
     mCustomColourFull = { mCustomColour.x, mCustomColour.y, mCustomColour.z, 1 };
     mCustomColourDim = { mCustomColour.x, mCustomColour.y, mCustomColour.z, 0.6 };

@@ -44,6 +44,9 @@ if not exist "%sourceFolder%\%config1%" (
 if exist "%installFolder%" rmdir /s /q "%installFolder%"
 mkdir "%installFolder%"
 
+echo Creating AppData folder...
+mkdir "%APPDATA%\%appName%"
+
 echo Copying files...
 xcopy "%sourceFolder%\*" "%installFolder%\" /E /I /H /Y >nul
 

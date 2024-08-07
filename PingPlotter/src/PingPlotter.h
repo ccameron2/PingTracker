@@ -65,4 +65,3 @@ private:
 	AppColours& mAppColoursRef;
 	std::unique_ptr<MultithreadingWorker> mMultithreadingWorker;
 };
-
