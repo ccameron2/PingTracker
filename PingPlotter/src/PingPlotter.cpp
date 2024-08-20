@@ -156,7 +156,7 @@ void PingPlotter::RenderAppUI()
 #endif
             if (ImGui::Checkbox("View All", &mShowAllData))
             {
-                mMaxDataDisplaySize = INITIAL_DATA_TO_VIEW;
+                mMaxDataDisplaySize = mPingCount;
             }
 
             ImGui::SameLine();
@@ -170,18 +170,18 @@ void PingPlotter::RenderAppUI()
             if (ImGui::Button("Output Data"))
             {
                 OutputDataToCSV();
-                ImGui::OpenPopup("my_select_popup");
+                ImGui::OpenPopup("Popup");
             }
-            if (ImGui::BeginPopup("my_select_popup"))
+            if (ImGui::BeginPopup("Popup"))
             {
-                ImGui::Text("Done!");
+                ImGui::Text("Saved to Documents/PingPlotter");
                 ImGui::EndPopup();
             }
 
             ImGui::SameLine();
 
             ImGui::PushItemWidth(mIntervalBoxWidth);
-            if (ImGui::InputInt("Interval ms", &mThreadSleepTime, -1, -1))
+            if (ImGui::InputInt("Interval to ping(ms)", &mThreadSleepTime, -1, -1))
             {
                 if (mThreadSleepTime > MAX_INTERVAL_MS) mThreadSleepTime = MAX_INTERVAL_MS;
                 if (mThreadSleepTime < MIN_INTERVAL_MS) mThreadSleepTime = MIN_INTERVAL_MS;
@@ -190,16 +190,13 @@ void PingPlotter::RenderAppUI()
 
             ImGui::SameLine();
 
-            ImGui::Text("| Colour");
+            ImGui::Text("");
 
             ImGui::SameLine();
             ImGui::PushItemWidth(mColourPickerWidth);
             mAppColoursRef.RenderColourPicker();
 
             ImGui::SameLine();
-
-            ImGuiIO& io = ImGui::GetIO();
-            ImGui::Text("| Perf: %.3f ms (%.1f FPS)", 1000.0f / io.Framerate, io.Framerate);
 
         	// Max data limit slider
             if (mShowAllData)
@@ -208,16 +205,22 @@ void PingPlotter::RenderAppUI()
                 ImGui::PushStyleVar(ImGuiStyleVar_Alpha, ImGui::GetStyle().Alpha * 0.5f);
             }
 
-        	ImGui::PushItemWidth(ImGui::GetWindowWidth());
-            ImGui::SliderInt("Max data", &mMaxDataDisplaySize, 5, mPingCount > INITIAL_DATA_TO_VIEW ? mPingCount : INITIAL_DATA_TO_VIEW);
+            ImGui::SameLine();
+            ImGui::PushItemWidth(50);
+            ImGui::DragInt("Max pings to display", &mMaxDataDisplaySize, 1, 5, mPingCount);
+            if (mMaxDataDisplaySize <= 5) { mMaxDataDisplaySize = 5; }
+            if (mMaxDataDisplaySize > mPingCount && mShowAllData == false) mMaxDataDisplaySize = mPingCount;
 
         	if (mShowAllData)
             {
                 ImGui::PopItemFlag();
                 ImGui::PopStyleVar();
             }
-            ///
-            ///
+            //
+
+            ImGui::SameLine();
+            ImGuiIO& io = ImGui::GetIO();
+            ImGui::Text("Perf: %.3f ms (%.1f FPS)", 1000.0f / io.Framerate, io.Framerate);
 
             ImGui::End();
         }
@@ -245,17 +248,17 @@ void PingPlotter::RenderAppUI()
             ImGui::End();
         }
 
+        // Show statistics
         {
             ImGui::Begin("Stats",nullptr,ImGuiWindowFlags_NoScrollbar);
 
-            ImGui::Text("Average ping: %.2fms", mCumulativePing / mPingCount);
+            ImGui::Text("Current average ping: %.2fms", mCumulativePing / mDataDisplaySize);
 
         	ImGui::SameLine();
             ImGui::Text("| Max ping: %.2fms", mMaxPing);
 
             ImGui::SameLine();
             ImGui::Text("| Min ping: %.2fms", mMinPing);
-
 
             ImGui::SameLine();
             ImGui::Text("| Total time: %.2fs", mAppTimer.get_elapsed_ms() / 1000.0f);

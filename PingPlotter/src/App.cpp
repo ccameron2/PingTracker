@@ -48,7 +48,7 @@ App::App()
 	ImGui_ImplSDL3_InitForSDLRenderer(mWindow, mRenderer);
 	ImGui_ImplSDLRenderer3_Init(mRenderer);
 
-	io.Fonts->AddFontFromFileTTF("Aptos.ttf", 18.0f);
+	io.Fonts->AddFontFromFileTTF("Roboto.ttf", 15.0f);
 	io.Fonts->ConfigData[0].RasterizerDensity = 3.0f;
 #ifndef WINDOWS
     mAppIcon = std::make_unique<AppIcon>(window);

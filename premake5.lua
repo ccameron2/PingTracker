@@ -20,7 +20,6 @@ IncludeDir["Icmplib"] = "%{prj.name}/vendor/icmplib"
 IncludeDir["plf_nanotimer"] = "%{prj.name}/vendor/plf_nanotimer"
 IncludeDir["stb"] = "%{prj.name}/vendor/stb"
 
-
 externalproject "SDL3-static"
    location "PingPlotter/vendor/SDL/build/"
    uuid "1a708b00-5301-11ee-9027-0800200c9a66"
@@ -64,7 +63,6 @@ project "PingPlotter"
         "%{IncludeDir.zlib}",
         "%{IncludeDir.libpng}",
         "%{IncludeDir.stb}",
-
     }
 
     links
@@ -86,7 +84,7 @@ project "PingPlotter"
         postbuildcommands
         {
             "{COPY} src/PingPlotterConfig.ini ../bin/" .. outputdir .. "/%{prj.name}",
-            "{COPY} Aptos.ttf ../bin/" .. outputdir .. "/%{prj.name}"
+            "{COPY} Roboto.ttf ../bin/" .. outputdir .. "/%{prj.name}"
         }
         
         files { 'PingPlotter/PingPlotter.rc', '**.ico' }
