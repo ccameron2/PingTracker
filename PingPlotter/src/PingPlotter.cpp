@@ -220,7 +220,7 @@ void PingPlotter::RenderAppUI()
 
             ImGui::SameLine();
             ImGuiIO& io = ImGui::GetIO();
-            ImGui::Text("Perf: %.3f ms (%.1f FPS)", 1000.0f / io.Framerate, io.Framerate);
+            ImGui::Text("%.3f ms (%.1f FPS)", 1000.0f / io.Framerate, io.Framerate);
 
             ImGui::End();
         }
