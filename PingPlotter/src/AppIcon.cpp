@@ -36,12 +36,13 @@ void AppIcon::LoadWindowIcon(SDL_Window& SDLWindow)
     {
         for (int x = 0; x < width; ++x)
         {
+            SDL_PixelFormat pixelFormat = mIconSurface->format;
             Uint32* pixel;
-            int surfaceBytesPerPixel = mIconSurface->format->bytes_per_pixel;
+            const SDL_PixelFormatDetails* formatDetails = SDL_GetPixelFormatDetails(pixelFormat);
+            Uint8 surfaceBytesPerPixel = formatDetails->bytes_per_pixel;
             int surfaceRowSize = mIconSurface->pitch;
             int surfaceOffset = x * surfaceBytesPerPixel + y * surfaceRowSize;
             Uint8* pixels = (Uint8*)mIconSurface->pixels;
-            SDL_PixelFormat* pixelFormat = mIconSurface->format;
 
             int pixelBufferOffset = 4 * (x + width * y);
             unsigned char red = pixelData[pixelBufferOffset];
@@ -49,7 +50,8 @@ void AppIcon::LoadWindowIcon(SDL_Window& SDLWindow)
             unsigned char blue = pixelData[pixelBufferOffset + 2];
             unsigned char alpha = pixelData[pixelBufferOffset + 3];
 
-            Uint32 colour = SDL_MapRGBA(pixelFormat, red, green, blue, alpha);
+
+            Uint32 colour = SDL_MapRGBA(formatDetails, SDL_GetSurfacePalette(mIconSurface), red, green, blue, alpha);
 
             pixel = (Uint32*)(pixels + surfaceOffset);
             *pixel = colour;
