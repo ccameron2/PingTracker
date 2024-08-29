@@ -25,13 +25,19 @@ externalproject "SDL3-static"
    uuid "1a708b00-5301-11ee-9027-0800200c9a66"
    kind "StaticLib"
    language "C"
+   
+externalproject "SDL_uclibc"
+   location "PingPlotter/vendor/SDL/build/"
+   uuid "f0946cdd-5260-4743-a524-dbeabe01871e"
+   kind "StaticLib"
+   language "C"
 
 project "PingPlotter"
     location "PingPlotter"
     kind "WindowedApp"
     language "C++"
     cppdialect "C++20"
-    staticruntime "on"
+    staticruntime "off"
     
     targetdir("bin/" .. outputdir .. "/%{prj.name}")
     objdir("bin-int/" .. outputdir .. "/%{prj.name}")
