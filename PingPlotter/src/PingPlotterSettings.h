@@ -1,8 +1,8 @@
 ﻿#pragma once
 #include <fstream>
-#include "PingPlotter/AppSettings.h"
+#include "AppSettings.h"
 
-class PingPlotterSettings : AppSettings
+class PingPlotterSettings : public AppSettings
 {
 public:
 	PingPlotterSettings(std::string fileName) : AppSettings(fileName)

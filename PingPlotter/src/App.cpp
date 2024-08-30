@@ -9,6 +9,8 @@
 #include "AppIcon.h"
 #endif
 
+#include <PingPlotter/vendor/SDL/src/video/SDL_sysvideo.h>
+
 #include "implot.h"
 #include "backends/imgui_impl_sdl3.h"
 #include "backends/imgui_impl_sdlrenderer3.h"
@@ -53,8 +55,10 @@ App::App()
 #ifndef WINDOWS
     mAppIcon = std::make_unique<AppIcon>(window);
 #endif
-	mAppColours = std::make_unique<AppColours>();
-	mPingPlotter = std::make_unique<PingPlotter>(*mAppColours.get());
+	mPingPlotter = std::make_unique<PingPlotter>();
+
+	AppSettings* appSettings = mPingPlotter->GetAppSettings();
+	appSettings->Width = SDL_SetWindowSize(mWindow, appSettings->Width, appSettings->Height);
 }
 
 App::~App()
@@ -84,11 +88,26 @@ bool App::Update()
 		if (event.type == SDL_EVENT_WINDOW_CLOSE_REQUESTED && event.window.windowID == SDL_GetWindowID(mWindow))
 			done = true;
 		if (event.type == SDL_EVENT_WINDOW_MINIMIZED)
+		{
 			mMinimised = true;
+			mMinimised = false;
+		}
 		if (event.type == SDL_EVENT_WINDOW_MAXIMIZED)
+		{
 			mMinimised = false;
+			mMaximised = true;
+		}
 		if (event.type == SDL_EVENT_WINDOW_RESTORED)
+		{
 			mMinimised = false;
+			mMaximised = false;
+		}
+		if (event.type == SDL_EVENT_WINDOW_RESIZED && mMaximised == false)
+		{
+			AppSettings* appSettings = mPingPlotter->GetAppSettings();
+			SDL_GetWindowSize(mWindow, &appSettings->Width, &appSettings->Height);
+			appSettings->SaveToFile();
+		}
 	}
 
 	ImGui_ImplSDLRenderer3_NewFrame();

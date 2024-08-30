@@ -11,7 +11,7 @@
 #include "implot.h"
 #include "MultithreadingWorker.h"
 
-PingPlotter::PingPlotter(AppColours& appColoursRef) : mAppColoursRef(appColoursRef)
+PingPlotter::PingPlotter()
 {
 	mAppTimer.start();
 
@@ -204,9 +204,13 @@ void PingPlotter::RenderAppUI()
 
             ImGui::Text("");
 
+            auto prevColour = mSettings.Colour;
             ImGui::SameLine();
             ImGui::PushItemWidth(mColourPickerWidth);
-            mAppColoursRef.RenderColourPicker();
+            mSettings.RenderColourPicker();
+            if (prevColour != mSettings.Colour && mSettings.Colour != "") 
+                mSettings.SaveToFile();
+
 
             ImGui::SameLine();
             ImGuiIO& io = ImGui::GetIO();
@@ -227,7 +231,7 @@ void PingPlotter::RenderAppUI()
             {
                 ImPlot::SetupAxes("Time (s)", "Ping (ms)", ImPlotAxisFlags_AutoFit, ImPlotAxisFlags_AutoFit);
 
-                ImPlot::PushStyleColor(ImPlotCol_Line, mAppColoursRef.GetColour());
+                ImPlot::PushStyleColor(ImPlotCol_Line, mSettings.GetCurrentColourRGBA());
 
                 ImPlot::PlotLine("My Line Plot", mTimeDataDisplay, mPingDataDisplay, mNumDataToDisplay);
 

@@ -18,13 +18,16 @@ enum class UIColour
 class AppColours
 {
 public:
-	AppColours();
+	AppColours(UIColour inColour);
 
 
 	ImVec4 GetColour() const { return mCustomColour; }
 
 	void SetStyle(UIColour colour);
-	void RenderColourPicker();
+	std::string RenderColourPicker();
+
+	static UIColour GetColourFromString(std::string inputString);
+
 private:
 	void SetColours();
 

@@ -3,55 +3,14 @@
 #include <fstream>
 #include <iostream>
 
-AppColours::AppColours()
+AppColours::AppColours(UIColour inColour)
 {
     UIColour finalColour = UIColour::Orange;
-
-//#ifdef WINDOWS
-//    char* buffer = nullptr;
-//    size_t size = 0;
-//    _dupenv_s(&buffer, &size, "APPDATA");
-//    mAppDataPath = std::string(buffer);
-//    mAppDataPath += "\\PingPlotter\\";
-//#endif
-
-    std::ifstream settingsFile(mAppDataPath + "PingPlotterConfigColour.ini", std::ios::binary);
-    if(settingsFile.is_open())
-    {
-        std::string inColour;
-        settingsFile >> inColour;
-        
-        if(inColour == "Orange")
-            finalColour = UIColour::Orange;
-
-        if(inColour == "Purple")
-            finalColour = UIColour::Purple;
-
-        if(inColour == "Red")
-            finalColour = UIColour::Red;
-
-        if(inColour == "Green")
-            finalColour = UIColour::Green;
-
-        if(inColour == "Blue")
-            finalColour = UIColour::Blue;
-
-        if(inColour == "Yellow")
-            finalColour = UIColour::Yellow;
-
-        if(inColour == "Grey")
-            finalColour = UIColour::Grey;
-
-        if(inColour == "Pink")
-            finalColour = UIColour::Pink;
-    }
-    SetStyle(finalColour);
+    SetStyle(inColour);
 }
 
 void AppColours::SetStyle(UIColour colour)
 {
-
-    std::ofstream settingsFile(mAppDataPath + "PingPlotterConfigColour.ini", std::ios::binary | std::ofstream::trunc);
     std::string colourString = "Orange";
     mCurrentColour = colour;
 
@@ -91,14 +50,6 @@ void AppColours::SetStyle(UIColour colour)
             break;
     }
 
-    colourString += "\n";
-
-    if(settingsFile.is_open())
-    {
-        settingsFile.write(colourString.data(), colourString.size());
-        settingsFile.close();
-    }
-
     mCustomColourFull = { mCustomColour.x, mCustomColour.y, mCustomColour.z, 1 };
     mCustomColourDim = { mCustomColour.x, mCustomColour.y, mCustomColour.z, 0.6 };
     mCustomColourDimmer = { mCustomColour.x, mCustomColour.y, mCustomColour.z, 0.4 };
@@ -107,8 +58,9 @@ void AppColours::SetStyle(UIColour colour)
     SetColours();
 }
 
-void AppColours::RenderColourPicker()
+std::string AppColours::RenderColourPicker()
 {
+    std::string returnColour;
     mCurrentColourName = mColourNames[static_cast<int>(mCurrentColour)];
 
     if (ImGui::BeginCombo("Colour", mCurrentColourName))
@@ -120,6 +72,7 @@ void AppColours::RenderColourPicker()
             {
                 mCurrentColour = static_cast<UIColour>(i);
                 SetStyle(mCurrentColour);
+                returnColour = mColourNames[i];
             }
             if (isSelected)
             {
@@ -127,7 +80,38 @@ void AppColours::RenderColourPicker()
             }
         }
         ImGui::EndCombo();
+        return returnColour;
     }
+    return mCurrentColourName;
+}
+
+UIColour AppColours::GetColourFromString(std::string inputString)
+{
+    UIColour colour = UIColour::Orange;
+    if (inputString == "Orange")
+        colour = UIColour::Orange;
+
+    if (inputString == "Purple")
+        colour = UIColour::Purple;
+
+    if (inputString == "Red")
+        colour = UIColour::Red;
+
+    if (inputString == "Green")
+        colour = UIColour::Green;
+
+    if (inputString == "Blue")
+        colour = UIColour::Blue;
+
+    if (inputString == "Yellow")
+        colour = UIColour::Yellow;
+
+    if (inputString == "Grey")
+        colour = UIColour::Grey;
+
+    if (inputString == "Pink")
+        colour = UIColour::Pink;
+    return colour;
 }
 
 void AppColours::SetColours()

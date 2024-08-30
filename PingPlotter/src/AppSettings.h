@@ -2,10 +2,12 @@
 #include <fstream>
 #include <string>
 
+#include "AppColours.h"
+
 class AppSettings
 {
 public:
-	AppSettings(std::string fileName) : FileName(fileName){};
+	AppSettings(std::string fileName) : FileName(fileName), mAppColours(UIColour::Orange){};
 
 	virtual void SaveToFile()
 	{
@@ -14,6 +16,8 @@ public:
 		{
 			if (OutFile.is_open())
 			{
+				OutFile << Colour;
+				OutFile << "\n";
 				OutFile << Width;
 				OutFile << "\n";
 				OutFile << Height;
@@ -22,8 +26,16 @@ public:
 		}
 	};
 
-	int Width = 800;
-	int Height = 600;
+	virtual void RenderColourPicker()
+	{
+		Colour = mAppColours.RenderColourPicker();
+	}
+
+	virtual ImVec4 GetCurrentColourRGBA() { return mAppColours.GetColour(); }
+
+	std::string Colour = "Orange";
+	int Width = 1280;
+	int Height = 720;
 	//bool Fullscreen = false;
 protected:
 	virtual void ReadFromFile()
@@ -33,6 +45,11 @@ protected:
 
 		if (InFile)
 		{
+			InFile >> input;
+
+			Colour = input;
+			mAppColours.SetStyle(AppColours::GetColourFromString(input));
+
 			InFile >> input;
 			Width = std::stoi(input);
 
@@ -44,5 +61,6 @@ protected:
 	std::string FileName;
 	std::ofstream OutFile;
 	std::ifstream InFile;
+	AppColours mAppColours;
 };
 

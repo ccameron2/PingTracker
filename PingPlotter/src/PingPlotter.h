@@ -28,11 +28,12 @@ const int MAX_DATAPOINTS = 100000;
 class PingPlotter
 {
 public:
-	PingPlotter(AppColours& appColours);
+	PingPlotter();
 	~PingPlotter();
 
 	bool Update();
 	void RenderAppUI();
+	AppSettings* GetAppSettings() { return &mSettings; };
 
 private:
 	void ClearVisualiser();
@@ -59,6 +60,5 @@ private:
 	int mIntervalBoxWidth = 30;
 	int mColourPickerWidth = 80;
 	SDL_Window* mSDLWindow;
-	AppColours& mAppColoursRef;
 	std::unique_ptr<MultithreadingWorker> mMultithreadingWorker;
 };
