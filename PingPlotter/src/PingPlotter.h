@@ -6,6 +6,8 @@
 #include <thread>
 #include <SDL3/SDL.h>
 
+#include "PingPlotterSettings.h"
+
 #include "AppColours.h"
 #include "MultithreadingWorker.h"
 
@@ -37,18 +39,16 @@ private:
 
 	void OutputDataToCSV();
 
+	PingPlotterSettings mSettings = PingPlotterSettings("PingPlotterSettings.ini");
+
 	bool mShowControlPanel = false;
 	float* mCurrentTime;
 	float* mPingTimes;
 	int mThreadSleepTime = 5;
-
-	int mMaxDataDisplaySize = 10;
-	int mPreviousDataDisplaySize = 10;
-
-	int mDataDisplaySize = 500;
 	float mCumulativePing = 0.0f;
 	float mMaxPing = 0.0f;
 	float mMinPing = 999999.0f;
+	int mNumDataToDisplay = 0;
 
 	float* mPingDataDisplay;
 	float* mTimeDataDisplay;
@@ -56,7 +56,6 @@ private:
 	int mPingCount = 0;
 	plf::nanotimer mAppTimer;
 	bool mPingsStarted = false;
-	bool mShowAllData = true;
 	int mIntervalBoxWidth = 30;
 	int mColourPickerWidth = 80;
 	SDL_Window* mSDLWindow;

@@ -7,13 +7,13 @@ AppColours::AppColours()
 {
     UIColour finalColour = UIColour::Orange;
 
-#ifdef WINDOWS
-    char* buffer = nullptr;
-    size_t size = 0;
-    _dupenv_s(&buffer, &size, "APPDATA");
-    mAppDataPath = std::string(buffer);
-    mAppDataPath += "\\PingPlotter\\";
-#endif
+//#ifdef WINDOWS
+//    char* buffer = nullptr;
+//    size_t size = 0;
+//    _dupenv_s(&buffer, &size, "APPDATA");
+//    mAppDataPath = std::string(buffer);
+//    mAppDataPath += "\\PingPlotter\\";
+//#endif
 
     std::ifstream settingsFile(mAppDataPath + "PingPlotterConfigColour.ini", std::ios::binary);
     if(settingsFile.is_open())

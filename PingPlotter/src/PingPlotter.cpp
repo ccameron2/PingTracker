@@ -13,14 +13,13 @@
 
 PingPlotter::PingPlotter(AppColours& appColoursRef) : mAppColoursRef(appColoursRef)
 {
-
-    mAppTimer.start();
+	mAppTimer.start();
 
     mCurrentTime = new float[MAX_DATAPOINTS];
     mPingTimes = new float[MAX_DATAPOINTS];
 
-    mPingDataDisplay = new float[mDataDisplaySize];
-    mTimeDataDisplay = new float[mDataDisplaySize];
+    mPingDataDisplay = new float[mSettings.DataViewRange];
+    mTimeDataDisplay = new float[mSettings.DataViewRange];
 
     for (int i = 0; i < MAX_DATAPOINTS; i++) { mCurrentTime[i] = 0; mPingTimes[i] = 0; }
 
@@ -55,31 +54,30 @@ PingPlotter::~PingPlotter()
 
 bool PingPlotter::Update()
 {
-    float cumulativePing = 0;
+    int previousDataViewRange = mNumDataToDisplay;
+    mNumDataToDisplay = mSettings.DataViewRange;
 
     // Get segment of data to display from data arrays
-    if (mPingCount < mMaxDataDisplaySize || mShowAllData)
+    if (mPingCount <= mNumDataToDisplay || mSettings.ShowAllData)
     {
-        mDataDisplaySize = mPingCount;
-    }
-    else
-    {
-        mDataDisplaySize = mMaxDataDisplaySize;
+        mNumDataToDisplay = mPingCount;
     }
 
-    if (mDataDisplaySize != mPreviousDataDisplaySize)
+    if (mNumDataToDisplay != previousDataViewRange)
     {
         delete[] mPingDataDisplay;
         delete[] mTimeDataDisplay;
-        mPingDataDisplay = new float[mDataDisplaySize + 1]; // TODO Heap corruption fix?
-        mTimeDataDisplay = new float[mDataDisplaySize + 1];
+        mPingDataDisplay = new float[mNumDataToDisplay];
+        mTimeDataDisplay = new float[mNumDataToDisplay];
     }
 
-    if (mPingCount >= mDataDisplaySize)
+    float cumulativePing = 0;
+
+    if (mPingCount >= mNumDataToDisplay)
     {
-        for (int i = 0; i < mDataDisplaySize; i++)
+        for (int i = 0; i < mNumDataToDisplay; i++)
         {
-            auto offset = mPingCount - mDataDisplaySize;
+            auto offset = mPingCount - mNumDataToDisplay;
             mTimeDataDisplay[i] = mCurrentTime[i + offset];
             mPingDataDisplay[i] = mPingTimes[i + offset];
 
@@ -88,18 +86,7 @@ bool PingPlotter::Update()
             if (mPingDataDisplay[i] < mMinPing) mMinPing = mPingDataDisplay[i];
         }
     }
-    else
-    {
-        for (int i = 0; i < mDataDisplaySize; i++)
-        {
-            mTimeDataDisplay[i] = mCurrentTime[i];
-            mPingDataDisplay[i] = mPingTimes[i];
 
-            cumulativePing += mPingDataDisplay[i];
-            if (mPingDataDisplay[i] > mMaxPing) mMaxPing = mPingDataDisplay[i];
-            if (mPingDataDisplay[i] < mMinPing) mMinPing = mPingDataDisplay[i];
-        }
-    }
     mCumulativePing = cumulativePing;
 
     RenderAppUI();
@@ -109,6 +96,8 @@ bool PingPlotter::Update()
 
 void PingPlotter::RenderAppUI()
 {
+    int previousDataViewRange = mNumDataToDisplay;
+
     // Make the background a DockSpace
     {
 #ifdef _DEBUG
@@ -154,10 +143,32 @@ void PingPlotter::RenderAppUI()
 #else
             ImGui::Begin("Controls", nullptr, ImGuiWindowFlags_NoNav | ImGuiWindowFlags_NoMove);
 #endif
-            if (ImGui::Checkbox("View All", &mShowAllData))
+            if (ImGui::Checkbox("View All", &mSettings.ShowAllData))
             {
-                mMaxDataDisplaySize = mPingCount;
+                mSettings.SaveToFile();
             }
+
+            ImGui::SameLine();
+
+            // Max data limit slider
+            if (mSettings.ShowAllData)
+            {
+                ImGui::PushItemFlag(ImGuiItemFlags_Disabled, true);
+                ImGui::PushStyleVar(ImGuiStyleVar_Alpha, ImGui::GetStyle().Alpha * 0.5f);
+            }
+
+            ImGui::SameLine();
+            ImGui::PushItemWidth(50);
+            ImGui::DragInt("Max pings to display", &mSettings.DataViewRange, 1, 5, mPingCount);
+            if (mSettings.DataViewRange <= 5) { mSettings.DataViewRange = 5; }
+            if (mSettings.DataViewRange != previousDataViewRange && !mSettings.ShowAllData) mSettings.SaveToFile();
+
+            if (mSettings.ShowAllData)
+            {
+                ImGui::PopItemFlag();
+                ImGui::PopStyleVar();
+            }
+            //
 
             ImGui::SameLine();
 
@@ -186,6 +197,7 @@ void PingPlotter::RenderAppUI()
                 if (mThreadSleepTime > MAX_INTERVAL_MS) mThreadSleepTime = MAX_INTERVAL_MS;
                 if (mThreadSleepTime < MIN_INTERVAL_MS) mThreadSleepTime = MIN_INTERVAL_MS;
                 mMultithreadingWorker->SetThreadSleepTime(mThreadSleepTime);
+                mSettings.SaveToFile();
             }
 
             ImGui::SameLine();
@@ -195,28 +207,6 @@ void PingPlotter::RenderAppUI()
             ImGui::SameLine();
             ImGui::PushItemWidth(mColourPickerWidth);
             mAppColoursRef.RenderColourPicker();
-
-            ImGui::SameLine();
-
-        	// Max data limit slider
-            if (mShowAllData)
-            {
-                ImGui::PushItemFlag(ImGuiItemFlags_Disabled, true);
-                ImGui::PushStyleVar(ImGuiStyleVar_Alpha, ImGui::GetStyle().Alpha * 0.5f);
-            }
-
-            ImGui::SameLine();
-            ImGui::PushItemWidth(50);
-            ImGui::DragInt("Max pings to display", &mMaxDataDisplaySize, 1, 5, mPingCount);
-            if (mMaxDataDisplaySize <= 5) { mMaxDataDisplaySize = 5; }
-            if (mMaxDataDisplaySize > mPingCount && mShowAllData == false) mMaxDataDisplaySize = mPingCount;
-
-        	if (mShowAllData)
-            {
-                ImGui::PopItemFlag();
-                ImGui::PopStyleVar();
-            }
-            //
 
             ImGui::SameLine();
             ImGuiIO& io = ImGui::GetIO();
@@ -239,7 +229,7 @@ void PingPlotter::RenderAppUI()
 
                 ImPlot::PushStyleColor(ImPlotCol_Line, mAppColoursRef.GetColour());
 
-                ImPlot::PlotLine("My Line Plot", mTimeDataDisplay, mPingDataDisplay, mDataDisplaySize);
+                ImPlot::PlotLine("My Line Plot", mTimeDataDisplay, mPingDataDisplay, mNumDataToDisplay);
 
                 ImPlot::PopStyleColor();
 
@@ -250,9 +240,9 @@ void PingPlotter::RenderAppUI()
 
         // Show statistics
         {
-            ImGui::Begin("Stats",nullptr,ImGuiWindowFlags_NoScrollbar);
+            ImGui::Begin("Stats", nullptr, ImGuiWindowFlags_NoScrollbar);
 
-            ImGui::Text("Current average ping: %.2fms", mCumulativePing / mDataDisplaySize);
+            ImGui::Text("Current average ping: %.2fms", mCumulativePing / mNumDataToDisplay);
 
         	ImGui::SameLine();
             ImGui::Text("| Max ping: %.2fms", mMaxPing);
@@ -264,7 +254,9 @@ void PingPlotter::RenderAppUI()
             ImGui::Text("| Total time: %.2fs", mAppTimer.get_elapsed_ms() / 1000.0f);
 
         	ImGui::SameLine();
+            bool prevShowControlPanel = mShowControlPanel;
             ImGui::Checkbox("| Show Controls", &mShowControlPanel);
+            if (mShowControlPanel != prevShowControlPanel) mSettings.SaveToFile();
 
         	ImGui::SameLine();
 #ifdef _DEBUG
