@@ -27,8 +27,8 @@ PingPlotter::PingPlotter()
     mMultithreadingWorker = std::make_unique<MultithreadingWorker>([this](double result, bool& completed)
         {
             completed = true;
-            mPingTimes[mPingCount] = result;
-            mCurrentTime[mPingCount] = mAppTimer.get_elapsed_ms() / 1000.0f;
+            mPingTimes[mPingCount] = static_cast<float>(result);
+            mCurrentTime[mPingCount] = static_cast<float>(mAppTimer.get_elapsed_ms()) / 1000.0f;
 
             mPingsStarted = true;
 
@@ -96,7 +96,7 @@ bool PingPlotter::Update()
 
 void PingPlotter::RenderAppUI()
 {
-    int previousDataViewRange = mNumDataToDisplay;
+    int previousDataViewRange = mSettings.DataViewRange;
 
     // Make the background a DockSpace
     {
@@ -227,7 +227,7 @@ void PingPlotter::RenderAppUI()
             ImGui::Begin("Ping Plotter", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoInputs);
 
 #endif
-            if (ImPlot::BeginPlot("My Plot", ImVec2{ -1,-1 }, ImPlotFlags_CanvasOnly /*| ImPlotFlags_NoFrame*/));
+            if (ImPlot::BeginPlot("My Plot", ImVec2{ -1,-1 }, ImPlotFlags_CanvasOnly /*| ImPlotFlags_NoFrame*/))
             {
                 ImPlot::SetupAxes("Time (s)", "Ping (ms)", ImPlotAxisFlags_AutoFit, ImPlotAxisFlags_AutoFit);
 
@@ -275,7 +275,7 @@ void PingPlotter::RenderAppUI()
 
 void PingPlotter::ClearVisualiser()
 {
-    mPingCount = 0.0f;
+    mPingCount = 0;
     mCumulativePing = 0.0f;
     mMaxPing = 0.0f;
     mMinPing = 999999.0f;

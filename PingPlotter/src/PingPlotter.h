@@ -57,8 +57,7 @@ private:
 	int mPingCount = 0;
 	plf::nanotimer mAppTimer;
 	bool mPingsStarted = false;
-	int mIntervalBoxWidth = 30;
-	int mColourPickerWidth = 80;
-	SDL_Window* mSDLWindow;
+	float mIntervalBoxWidth = 30.0f;
+	float mColourPickerWidth = 80.0f;
 	std::unique_ptr<MultithreadingWorker> mMultithreadingWorker;
 };

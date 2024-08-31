@@ -51,8 +51,8 @@ void AppColours::SetStyle(UIColour colour)
     }
 
     mCustomColourFull = { mCustomColour.x, mCustomColour.y, mCustomColour.z, 1 };
-    mCustomColourDim = { mCustomColour.x, mCustomColour.y, mCustomColour.z, 0.6 };
-    mCustomColourDimmer = { mCustomColour.x, mCustomColour.y, mCustomColour.z, 0.4 };
+    mCustomColourDim = { mCustomColour.x, mCustomColour.y, mCustomColour.z, 0.6f };
+    mCustomColourDimmer = { mCustomColour.x, mCustomColour.y, mCustomColour.z, 0.4f };
 
     mCurrentColourName = mColourNames[static_cast<int>(mCurrentColour)];
     SetColours();

@@ -31,6 +31,6 @@ void MultithreadingWorker::Thread()
 
 double MultithreadingWorker::PingAddress()
 {
-    icmplib::IPAddress ipAddress("8.8.8.8");
+    const icmplib::IPAddress ipAddress("8.8.8.8");
     return Ping(ipAddress, ICMPLIB_TIMEOUT_1S).delay;
 }

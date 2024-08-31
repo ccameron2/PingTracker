@@ -58,7 +58,7 @@ App::App()
 	mPingPlotter = std::make_unique<PingPlotter>();
 
 	AppSettings* appSettings = mPingPlotter->GetAppSettings();
-	appSettings->Width = SDL_SetWindowSize(mWindow, appSettings->Width, appSettings->Height);
+	SDL_SetWindowSize(mWindow, appSettings->Width, appSettings->Height);
 }
 
 App::~App()

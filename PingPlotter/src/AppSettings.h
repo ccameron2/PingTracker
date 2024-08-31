@@ -43,7 +43,7 @@ protected:
 		InFile = std::ifstream(FileName, std::ios::binary);
 		std::string input;
 
-		if (InFile)
+		if (InFile.is_open())
 		{
 			InFile >> input;
 
