@@ -7,19 +7,28 @@ PingPlotter is a simple, lightweight, cross-platform network utility. It helps y
 
 
 Download: [Releases](https://github.com/ccameron2/PingPlotter/releases)
+## Features
+- Visual representation of network latency
+- Customisable graph view
+- Statistics (min,max,average)
+- Different colours!
 
 ## Installation
-
+[Pictures here]
+## Usage
+[Pictures here]
 ## How it works
 Built using:
 - [SDL3](https://github.com/libsdl-org/SDL)
-- [Imgui](https://github.com/ocornut/imgui)
-- [Implot](https://github.com/epezent/implot)
+- [imgui](https://github.com/ocornut/imgui)
+- [implot](https://github.com/epezent/implot)
 - [imcplib](https://github.com/markondej/cpp-icmplib)
 - [plfnanotimer](https://github.com/mattreecebentley/plf_nanotimer)
 - [premake](https://github.com/premake/premake-core)
 - [cmake](https://github.com/Kitware/CMake)
 - [stb_image](https://github.com/nothings/stb/blob/master/stb_image.h) on Linux
+
+This program creates an SDL window, displays an imgui ui, and displays the ping data in a graph using implot. Pings are sent using imcplib and plfnanotimer is used for a timer.
 
 ## Source files
 ```bash
@@ -27,7 +36,14 @@ git clone --recurse-submodules https://github.com/ccameron2/PingPlotter
 ```
 ## Building from source
 ### Windows
-Coming soon
+
+- Ensure you have cmake installed (required to build SDL)
+- Get the source code using the above command
+- Run GenerateProjects.bat
+- Open the generated solution and build each project
+- Run the program from visual studio
+- (There may be an issue with "#include SDL_Internal.h in one of the SDL files". If you get this, comment out the include, im not sure whats going on there)
+
 ### Linux
 Coming soon
 ## License
