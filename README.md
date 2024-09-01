@@ -1,6 +1,5 @@
 # PingPlotter
-
-[Icon Here]
+<img src="https://github.com/user-attachments/assets/e5bee8e3-a8ac-4859-a8d6-6fc3a90c4b75" width="400" height="400" />
 
 PingPlotter is a simple, lightweight, cross-platform network utility. It helps you visualize network latency and identify connection issues.
 
