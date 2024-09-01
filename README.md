@@ -1,16 +1,15 @@
 # PingPlotter
-<img src="https://github.com/user-attachments/assets/e5bee8e3-a8ac-4859-a8d6-6fc3a90c4b75" width="400" height="400" />
+<img src="https://github.com/user-attachments/assets/e5bee8e3-a8ac-4859-a8d6-6fc3a90c4b75" width="300" height="300" />
 
 PingPlotter is a simple, lightweight, cross-platform network utility. It helps you visualize network latency and identify connection issues.
 
+![PingPlotterRunning](https://github.com/user-attachments/assets/e0386d29-076f-43ee-ab3c-d4938873a453)
+
+
 Download: [Releases](https://github.com/ccameron2/PingPlotter/releases)
-## Features
-- 
 
 ## Installation
-[Pictures here]
-## Usage
-[Pictures here]
+
 ## How it works
 Built using:
 - [SDL3](https://github.com/libsdl-org/SDL)
