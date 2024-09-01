@@ -14,10 +14,9 @@ Download: [Releases](https://github.com/ccameron2/PingPlotter/releases)
 - Different colours!
 
 ## Installation
-[Pictures here]
-## Usage
-[Pictures here]
-## How it works
+Download a release from [Releases] and double click the InstallPingPlotter.bat file.
+Delete the downloaded folder after installation if desired
+
 Built using:
 - [SDL3](https://github.com/libsdl-org/SDL)
 - [imgui](https://github.com/ocornut/imgui)
@@ -28,7 +27,10 @@ Built using:
 - [cmake](https://github.com/Kitware/CMake)
 - [stb_image](https://github.com/nothings/stb/blob/master/stb_image.h) on Linux
 
-This program creates an SDL window, displays an imgui ui, and displays the ping data in a graph using implot. Pings are sent using imcplib and plfnanotimer is used for a timer.
+This program creates an SDL window, displays an imgui ui, and displays the ping data in a graph using implot. 
+Pings are sent using imcplib and plfnanotimer is used for a timer.
+On Linux, stb_image is used to read the app icon from file.
+PingPlotter uses a premake build system, GenerateProjects calls cmake to build SDL.
 
 ## Source files
 ```bash
@@ -42,7 +44,6 @@ git clone --recurse-submodules https://github.com/ccameron2/PingPlotter
 - Run GenerateProjects.bat
 - Open the generated solution and build each project
 - Run the program from visual studio
-- (There may be an issue with "#include SDL_Internal.h in one of the SDL files". If you get this, comment out the include, im not sure whats going on there)
 
 ### Linux
 Coming soon
