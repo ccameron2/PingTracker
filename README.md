@@ -1,7 +1,7 @@
 # PingPlotter
 <img src="https://github.com/user-attachments/assets/e5bee8e3-a8ac-4859-a8d6-6fc3a90c4b75" width="300" height="300" />
 
-PingPlotter is a simple, lightweight, cross-platform network utility. It helps you visualize network latency and identify connection issues.
+PingPlotter is a simple, lightweight, cross-platform network utility written in C++. It helps you visualize network latency and identify connection issues.
 
 ![PingPlotterRunning](https://github.com/user-attachments/assets/e0386d29-076f-43ee-ab3c-d4938873a453)
 
@@ -10,7 +10,7 @@ Download: [Releases](https://github.com/ccameron2/PingPlotter/releases)
 ## Features
 - Visual representation of network latency
 - Customisable graph view
-- Statistics (min,max,average)
+- Statistics (min, max, average)
 - Different colours!
 
 ## Installation
@@ -30,9 +30,9 @@ Built using:
 - [stb_image](https://github.com/nothings/stb/blob/master/stb_image.h) on Linux
 
 This program creates an SDL window, displays an imgui ui, and displays the ping data in a graph using implot. 
-Pings are sent to "8.8.8.8" using imcplib and plfnanotimer is used for a timer.
+Pings are sent to "8.8.8.8" using imcplib and plfnanotimer is used to measure ping times.
 On Linux, stb_image is used to read the app icon from file.
-PingPlotter uses a premake build system, GenerateProjects calls cmake to build SDL.
+PingPlotter uses a premake build system, GenerateProjects also calls cmake to build SDL.
 
 ## Source files
 ```bash
@@ -45,7 +45,6 @@ git clone --recurse-submodules https://github.com/ccameron2/PingPlotter
 - Get the source code using the above command
 - Run GenerateProjects.bat
 - Open the generated solution and build each project
-- Run the program from visual studio
 
 ### Linux
 Coming soon
