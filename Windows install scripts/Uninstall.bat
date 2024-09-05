@@ -1,7 +1,7 @@
 @echo off
 cd /d "%~dp0"
 
-set "exeName=PingPlotter.exe"
+set "exeName=PingSight.exe"
 
 net session >nul 2>&1
 if %errorLevel% == 0 (

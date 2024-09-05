@@ -1,11 +1,11 @@
 @echo off
 cd /d "%~dp0"
 
-set "exeName=PingPlotter.exe"
+set "exeName=PingSight.exe"
 for %%I in ("%exeName%") do set "appName=%%~nI"
 set "sourceFolder=%~dp0%appName%"
 set "installFolder=%APPDATA%\%appName%"
-set "config1=PingPlotterConfig.ini"
+set "config1=PingSightConfig.ini"
 
 echo This program will install %appName% on your system.
 choice /C YN /M "Do you want to continue?"

@@ -1,7 +1,6 @@
-workspace "PingPlotter"
-    platforms "x64"
+workspace "PingSight"
     architecture "x64"
-    startproject "PingPlotter"
+    startproject "PingSight"
     dpiawareness "HighPerMonitor"
     
     configurations
@@ -21,19 +20,19 @@ IncludeDir["plf_nanotimer"] = "%{prj.name}/vendor/plf_nanotimer"
 IncludeDir["stb"] = "%{prj.name}/vendor/stb"
 
 externalproject "SDL3-static"
-   location "PingPlotter/vendor/SDL/build/"
+   location "PingSight/vendor/SDL/build/"
    uuid "1a708b00-5301-11ee-9027-0800200c9a66"
    kind "StaticLib"
    language "C"
    
 externalproject "SDL_uclibc"
-   location "PingPlotter/vendor/SDL/build/"
+   location "PingSight/vendor/SDL/build/"
    uuid "f0946cdd-5260-4743-a524-dbeabe01871e"
    kind "StaticLib"
    language "C"
 
-project "PingPlotter"
-    location "PingPlotter"
+project "PingSight"
+    location "PingSight"
     kind "WindowedApp"
     language "C++"
     cppdialect "C++20"
@@ -89,11 +88,11 @@ project "PingPlotter"
         
         postbuildcommands
         {
-            "{COPY} src/PingPlotterConfig.ini ../bin/" .. outputdir .. "/%{prj.name}",
+            "{COPY} src/PingSightConfig.ini ../bin/" .. outputdir .. "/%{prj.name}",
             "{COPY} Roboto.ttf ../bin/" .. outputdir .. "/%{prj.name}"
         }
         
-        files { 'PingPlotter/PingPlotter.rc', '**.ico' }
+        files { 'PingSight/PingSight.rc', '**.ico' }
         vpaths { ['Resources/*'] = { '*.rc', '**.ico' }}
         removefiles("%{prj.name}/src/Icon.h","%{prj.name}/src/Icon.cpp","%{prj.name}/src/AppIcon.h","%{prj.name}/src/AppIcon.cpp")
 

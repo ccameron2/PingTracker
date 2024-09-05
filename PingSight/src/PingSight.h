@@ -6,7 +6,7 @@
 #include <thread>
 #include <SDL3/SDL.h>
 
-#include "PingPlotterSettings.h"
+#include "PingSightSettings.h"
 
 #include "AppColours.h"
 #include "MultithreadingWorker.h"
@@ -25,11 +25,11 @@ const int MIN_INTERVAL_MS = 1;
 
 const int MAX_DATAPOINTS = 100000;
 
-class PingPlotter
+class PingSight
 {
 public:
-	PingPlotter();
-	~PingPlotter();
+	PingSight();
+	~PingSight();
 
 	bool Update();
 	void RenderAppUI();
@@ -40,7 +40,7 @@ private:
 
 	void OutputDataToCSV();
 
-	PingPlotterSettings mSettings = PingPlotterSettings("PingPlotterSettings.ini");
+	PingSightSettings mSettings = PingSightSettings("PingSightSettings.ini");
 
 	bool mShowControlPanel = false;
 	float* mCurrentTime;

@@ -3,7 +3,7 @@
 #include "imgui.h"
 
 #include "AppColours.h"
-#include "PingPlotter.h"
+#include "PingSight.h"
 
 #ifndef WINDOWS
 #include "AppIcon.h"
@@ -29,5 +29,5 @@ private:
 #ifndef WINDOWS
 	std::unique_ptr<AppIcon> mAppIcon;
 #endif
-	std::unique_ptr<PingPlotter> mPingPlotter;
+	std::unique_ptr<PingSight> mPingSight;
 };

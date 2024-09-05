@@ -1,11 +1,11 @@
-# PingPlotter
+# PingSight
 <img src="https://github.com/user-attachments/assets/e5bee8e3-a8ac-4859-a8d6-6fc3a90c4b75" width="300" height="300" />
 
-PingPlotter is a simple, lightweight, cross-platform network utility written in C++. It helps you visualize network latency and identify connection issues.
+PingSight is a simple, lightweight, cross-platform network utility written in C++. It helps you visualize network latency and identify connection issues.
 
-![PingPlotterRunning](https://github.com/user-attachments/assets/e0386d29-076f-43ee-ab3c-d4938873a453)
+![PingSightRunning](https://github.com/user-attachments/assets/e0386d29-076f-43ee-ab3c-d4938873a453)
 
-Download: [Releases](https://github.com/ccameron2/PingPlotter/releases)
+Download: [Releases](https://github.com/ccameron2/PingSight/releases)
 
 ## Features
 - Visual representation of network latency
@@ -14,7 +14,7 @@ Download: [Releases](https://github.com/ccameron2/PingPlotter/releases)
 - Different colours!
 
 ## Installation
-Download a release from [Releases](https://github.com/ccameron2/PingPlotter/releases), extract, and double click the InstallPingPlotter.bat file.
+Download a release from [Releases](https://github.com/ccameron2/PingSight/releases), extract, and double click the InstallPingSight.bat file.
 Delete the downloaded folder after installation if desired
 
 ## How it works
@@ -32,11 +32,11 @@ Built using:
 This program creates an SDL window, displays an imgui ui, and displays the ping data in a graph using implot. 
 Pings are sent to "8.8.8.8" using imcplib and plfnanotimer is used to measure ping times.
 On Linux, stb_image is used to read the app icon from file.
-PingPlotter uses a premake build system, GenerateProjects also calls cmake to build SDL.
+PingSight uses a premake build system, GenerateProjects also calls cmake to build SDL.
 
 ## Source files
 ```bash
-git clone --recurse-submodules https://github.com/ccameron2/PingPlotter
+git clone --recurse-submodules https://github.com/ccameron2/PingSight
 ```
 ## Building from source
 
@@ -50,6 +50,6 @@ git clone --recurse-submodules https://github.com/ccameron2/PingPlotter
 Coming soon
 ## License
 
-PingPlotter is released under the MIT License
+PingSight is released under the MIT License
 
 ---

@@ -1,4 +1,4 @@
-#include "PingPlotter.h"
+#include "PingSight.h"
 
 #include <fstream>
 
@@ -11,7 +11,7 @@
 #include "implot.h"
 #include "MultithreadingWorker.h"
 
-PingPlotter::PingPlotter()
+PingSight::PingSight()
 {
 	mAppTimer.start();
 
@@ -43,7 +43,7 @@ PingPlotter::PingPlotter()
         });
 }
 
-PingPlotter::~PingPlotter()
+PingSight::~PingSight()
 {
     mMultithreadingWorker.reset();
     delete[] mCurrentTime;
@@ -52,7 +52,7 @@ PingPlotter::~PingPlotter()
     delete[] mTimeDataDisplay;
 }
 
-bool PingPlotter::Update()
+bool PingSight::Update()
 {
     int previousDataViewRange = mNumDataToDisplay;
     mNumDataToDisplay = mSettings.DataViewRange;
@@ -94,7 +94,7 @@ bool PingPlotter::Update()
     return true;
 }
 
-void PingPlotter::RenderAppUI()
+void PingSight::RenderAppUI()
 {
     int previousDataViewRange = mSettings.DataViewRange;
 
@@ -185,7 +185,7 @@ void PingPlotter::RenderAppUI()
             }
             if (ImGui::BeginPopup("Popup"))
             {
-                ImGui::Text("Saved to Documents/PingPlotter");
+                ImGui::Text("Saved to Documents/PingSight");
                 ImGui::EndPopup();
             }
 
@@ -222,9 +222,9 @@ void PingPlotter::RenderAppUI()
         // Ping / time line graph
         {
 #ifdef _DEBUG
-            ImGui::Begin("Ping Plotter", nullptr, ImGuiWindowFlags_NoDecoration);
+            ImGui::Begin("PingSight", nullptr, ImGuiWindowFlags_NoDecoration);
 #else
-            ImGui::Begin("Ping Plotter", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoInputs);
+            ImGui::Begin("PingSight", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoInputs);
 
 #endif
             if (ImPlot::BeginPlot("My Plot", ImVec2{ -1,-1 }, ImPlotFlags_CanvasOnly /*| ImPlotFlags_NoFrame*/))
@@ -273,7 +273,7 @@ void PingPlotter::RenderAppUI()
 }
 
 
-void PingPlotter::ClearVisualiser()
+void PingSight::ClearVisualiser()
 {
     mPingCount = 0;
     mCumulativePing = 0.0f;
@@ -282,7 +282,7 @@ void PingPlotter::ClearVisualiser()
     mAppTimer.start();
 }
 
-void PingPlotter::OutputDataToCSV()
+void PingSight::OutputDataToCSV()
 {
     std::string docsPath = "";
 #ifdef WINDOWS
@@ -294,7 +294,7 @@ void PingPlotter::OutputDataToCSV()
 	if (SUCCEEDED(hr)) wPath = ppszPath;
 
 	docsPath = std::string(wPath.begin(),wPath.end());
-    docsPath += "\\PingPlotter\\";
+    docsPath += "\\PingSight\\";
 
 #endif
     std::ofstream outFile(docsPath + "Output.csv", std::ios::trunc);

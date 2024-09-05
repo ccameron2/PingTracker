@@ -1,8 +1,8 @@
 @echo off
 cd /d "%~dp0"
 
-set "exeName=PingPlotter.exe"
-set "config1=PingPlotterConfig.ini"
+set "exeName=PingSight.exe"
+set "config1=PingSightConfig.ini"
 
 net session >nul 2>&1
 if %errorLevel% == 0 (

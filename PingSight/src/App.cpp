@@ -9,7 +9,7 @@
 #include "AppIcon.h"
 #endif
 
-#include <PingPlotter/vendor/SDL/src/video/SDL_sysvideo.h>
+#include <PingSight/vendor/SDL/src/video/SDL_sysvideo.h>
 
 #include "implot.h"
 #include "backends/imgui_impl_sdl3.h"
@@ -23,7 +23,7 @@ App::App()
 	// Create window with SDL_Renderer graphics context
 	Uint32 window_flags = SDL_WINDOW_RESIZABLE | SDL_WINDOW_HIGH_PIXEL_DENSITY;
 
-	SDL_CreateWindowAndRenderer("Ping Plotter", 1280, 720, window_flags, &mWindow, &mRenderer);
+	SDL_CreateWindowAndRenderer("PingSight", 1280, 720, window_flags, &mWindow, &mRenderer);
 	SDL_SetWindowPosition(mWindow, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);
 	SDL_ShowWindow(mWindow);
 
@@ -37,7 +37,7 @@ App::App()
 	io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
 	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;         // Enable Docking
 	  
-	io.IniFilename = "PingPlotterConfig.ini";
+	io.IniFilename = "PingSightConfig.ini";
 
 #ifdef _DEBUG
 	io.ConfigDebugIsDebuggerPresent = true;
@@ -55,9 +55,9 @@ App::App()
 #ifndef WINDOWS
     mAppIcon = std::make_unique<AppIcon>(window);
 #endif
-	mPingPlotter = std::make_unique<PingPlotter>();
+	mPingSight = std::make_unique<PingSight>();
 
-	AppSettings* appSettings = mPingPlotter->GetAppSettings();
+	AppSettings* appSettings = mPingSight->GetAppSettings();
 	SDL_SetWindowSize(mWindow, appSettings->Width, appSettings->Height);
 }
 
@@ -104,7 +104,7 @@ bool App::Update()
 		}
 		if (event.type == SDL_EVENT_WINDOW_RESIZED && mMaximised == false)
 		{
-			AppSettings* appSettings = mPingPlotter->GetAppSettings();
+			AppSettings* appSettings = mPingSight->GetAppSettings();
 			SDL_GetWindowSize(mWindow, &appSettings->Width, &appSettings->Height);
 			appSettings->SaveToFile();
 		}
@@ -116,7 +116,7 @@ bool App::Update()
 
 	ImGui::NewFrame();
 
-	if (!mMinimised) mPingPlotter->Update();
+	if (!mMinimised) mPingSight->Update();
 
 	// Rendering
 	ImGui::Render();
