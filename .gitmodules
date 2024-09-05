@@ -1,1 +1,19 @@
 
+[submodule "PingSight/vendor/imgui"]
+	path = PingSight/vendor/imgui
+	url = https://github.com/ccameron2/imgui
+[submodule "PingSight/vendor/SDL"]
+	path = PingSight/vendor/SDL
+	url = https://github.com/ccameron2/SDL
+[submodule "PingSight/vendor/implot"]
+	path = PingSight/vendor/implot
+	url = https://github.com/epezent/implot
+[submodule "PingSight/vendor/icmplib"]
+	path = PingSight/vendor/icmplib
+	url = https://github.com/markondej/cpp-icmplib
+[submodule "PingSight/vendor/plf_nanotimer"]
+	path = PingSight/vendor/plf_nanotimer
+	url = https://github.com/mattreecebentley/plf_nanotimer
+[submodule "PingSight/vendor/stb"]
+	path = PingSight/vendor/stb
+	url = https://github.com/nothings/stb
