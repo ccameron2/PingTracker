@@ -1,4 +1,5 @@
 workspace "PingSight"
+    platforms "x64"
     architecture "x64"
     startproject "PingSight"
     dpiawareness "HighPerMonitor"
@@ -13,8 +14,8 @@ outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 
 IncludeDir = {}
 IncludeDir["SDL"] = "%{prj.name}/vendor/SDL/include"
-IncludeDir["ImGui"] = "%{prj.name}/vendor/ImGui"
-IncludeDir["ImPlot"] = "%{prj.name}/vendor/ImPlot"
+IncludeDir["ImGui"] = "%{prj.name}/vendor/imgui"
+IncludeDir["ImPlot"] = "%{prj.name}/vendor/implot"
 IncludeDir["Icmplib"] = "%{prj.name}/vendor/icmplib"
 IncludeDir["plf_nanotimer"] = "%{prj.name}/vendor/plf_nanotimer"
 IncludeDir["stb"] = "%{prj.name}/vendor/stb"
@@ -70,17 +71,17 @@ project "PingSight"
         "%{IncludeDir.stb}",
     }
 
-    links
-    {
-        "SDL3-static",
-        "setupapi.lib",
-        "winmm.lib",
-        "version.lib",    
-    }
-
     filter "system:windows"
         systemversion "latest"
         kind "WindowedApp"
+        links
+        {
+            "SDL3-static",
+            "setupapi.lib",
+            "winmm.lib",
+            "version.lib",    
+        }
+
         defines
         {
             "WINDOWS"
@@ -101,7 +102,10 @@ project "PingSight"
 
     filter "system:linux"
         kind "WindowedApp"
-    
+        libdirs { "%{prj.name}/vendor/SDL/build" }
+        links{"SDL3"}
+        --linkoptions { "-Wl,-rpath,$(ORIGIN)/%{prj.name}/vendor/SDL/build" }
+                
     filter "configurations:Debug"
         runtime "Debug"
         symbols "on"
