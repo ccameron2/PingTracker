@@ -6,7 +6,7 @@
 #include <shlobj_core.h>
 #endif
 
-#include "App.h"
+#include "App/App.h"
 #include "ImGuiProgressIndicators.h"
 #include "implot.h"
 #include "MultithreadingWorker.h"

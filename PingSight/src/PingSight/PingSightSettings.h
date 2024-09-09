@@ -1,6 +1,6 @@
 ﻿#pragma once
 #include <fstream>
-#include "AppSettings.h"
+#include "App/AppSettings.h"
 
 class PingSightSettings : public AppSettings
 {

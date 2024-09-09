@@ -9,8 +9,6 @@
 #include "AppIcon.h"
 #endif
 
-#include <PingSight/vendor/SDL/src/video/SDL_sysvideo.h>
-
 #include "implot.h"
 #include "backends/imgui_impl_sdl3.h"
 #include "backends/imgui_impl_sdlrenderer3.h"

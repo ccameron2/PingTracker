@@ -3,7 +3,7 @@
 #include "imgui.h"
 
 #include "AppColours.h"
-#include "PingSight.h"
+#include "PingSight/PingSight.h"
 
 #ifndef WINDOWS
 #include "AppIcon.h"

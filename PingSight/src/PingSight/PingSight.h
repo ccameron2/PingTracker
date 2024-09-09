@@ -8,7 +8,7 @@
 
 #include "PingSightSettings.h"
 
-#include "AppColours.h"
+#include "App/AppColours.h"
 #include "MultithreadingWorker.h"
 
 struct WorkerThread
