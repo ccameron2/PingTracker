@@ -31,7 +31,6 @@ Built using:
 
 This program creates an SDL window, displays an imgui ui, and displays the ping data in a graph using implot. 
 Pings are sent to "8.8.8.8" using imcplib and plfnanotimer is used to measure ping times.
-On Linux, stb_image is used to read the app icon from file.
 PingSight uses a premake build system, GenerateProjects also calls cmake to build SDL.
 
 ## Source files
