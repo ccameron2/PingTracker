@@ -74,13 +74,26 @@ project "PingSight"
         
         postbuildcommands
         {
-            "{COPY} src/PingSightConfig.ini ../bin/" .. outputdir .. "/%{prj.name}",
-            "{COPY} Roboto.ttf ../bin/" .. outputdir .. "/%{prj.name}"
+            "{COPY} src/PingSight/PingSightConfig.ini ../bin/" .. outputdir .. "/%{prj.name}",
+            "{COPY} resources/Roboto.ttf ../bin/" .. outputdir .. "/%{prj.name}"
         }
-        
+
         files { 'PingSight/PingSight.rc', '**.ico' }
         vpaths { ['Resources/*'] = { '*.rc', '**.ico' }}
-        removefiles("%{prj.name}/src/Icon.h","%{prj.name}/src/Icon.cpp","%{prj.name}/src/AppIcon.h","%{prj.name}/src/AppIcon.cpp")
+        
+        filter "configurations:Debug"
+            libdirs
+            {
+                "PingSight/vendor/SDL/build/Debug"
+            }
+        
+        filter "configurations:Release"
+            libdirs
+            {
+                "PingSight/vendor/SDL/build/Release"
+            }
+
+       
 
     filter "system:macosx"
         kind "WindowedApp"
