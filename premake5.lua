@@ -18,7 +18,6 @@ IncludeDir["ImGui"] = "%{prj.name}/vendor/imgui"
 IncludeDir["ImPlot"] = "%{prj.name}/vendor/implot"
 IncludeDir["Icmplib"] = "%{prj.name}/vendor/icmplib"
 IncludeDir["plf_nanotimer"] = "%{prj.name}/vendor/plf_nanotimer"
-IncludeDir["stb"] = "%{prj.name}/vendor/stb"
 
 project "PingSight"
     location "PingSight"
@@ -42,7 +41,6 @@ project "PingSight"
         "%{prj.name}/vendor/imgui/backends/imgui_impl_sdlrenderer3.cpp",
         "%{prj.name}/vendor/imgui/backends/imgui_impl_sdl3.h",
         "%{prj.name}/vendor/imgui/backends/imgui_impl_sdl3.cpp",
-        "%{prj.name}/vendor/stb/stb_image.h",        
     }
 
     includedirs
@@ -53,7 +51,6 @@ project "PingSight"
         "%{IncludeDir.ImPlot}",
         "%{IncludeDir.Icmplib}",
         "%{IncludeDir.plf_nanotimer}",
-        "%{IncludeDir.stb}",
     }
 
     filter "system:windows"
