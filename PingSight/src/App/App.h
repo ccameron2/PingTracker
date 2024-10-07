@@ -5,10 +5,6 @@
 #include "AppColours.h"
 #include "PingSight/PingSight.h"
 
-#ifndef WINDOWS
-#include "AppIcon.h"
-#endif
-
 class App
 {
 public:

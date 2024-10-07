@@ -1,8 +1,5 @@
 #include "App/App.h"
 
-//#ifdef WINDOWS
-//#include "SDL3/SDL_main.h"
-//#endif
 #include "SDL3/SDL.h"
 #include "SDL3/SDL_main.h"
 
