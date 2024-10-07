@@ -4,8 +4,6 @@
 
 MultithreadingWorker::MultithreadingWorker(std::function<void (double, bool&)> callbackFunc)
 {
-    /*std::async;*/
-
     mWorker.thread = std::thread(&MultithreadingWorker::Thread, this);
     mWorker.onCompleteCallback = callbackFunc;
 }

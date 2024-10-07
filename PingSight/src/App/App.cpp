@@ -46,9 +46,7 @@ App::App()
 
 	io.Fonts->AddFontFromFileTTF("Roboto.ttf", 15.0f);
 	io.Fonts->ConfigData[0].RasterizerDensity = 3.0f;
-#ifndef WINDOWS
-    mAppIcon = std::make_unique<AppIcon>(*mWindow);
-#endif
+
 	mPingSight = std::make_unique<PingSight>();
 
 	AppSettings* appSettings = mPingSight->GetAppSettings();
