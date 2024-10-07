@@ -27,7 +27,6 @@ Built using:
 - [plfnanotimer](https://github.com/mattreecebentley/plf_nanotimer)
 - [premake](https://github.com/premake/premake-core)
 - [cmake](https://github.com/Kitware/CMake)
-- [stb_image](https://github.com/nothings/stb/blob/master/stb_image.h) on Linux
 
 This program creates an SDL window, displays an imgui ui, and displays the ping data in a graph using implot. 
 Pings are sent to "8.8.8.8" using imcplib and plfnanotimer is used to measure ping times.
