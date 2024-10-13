@@ -1,16 +1,10 @@
 
-[submodule "PingTracer/vendor/SDL"]
-	path = PingTracer/vendor/SDL
-	url = https://github.com/libsdl-org/SDL
-[submodule "PingTracer/vendor/imgui"]
-	path = PingTracer/vendor/imgui
-	url = https://github.com/ocornut/imgui
 [submodule "PingTracer/vendor/implot"]
 	path = PingTracer/vendor/implot
 	url = https://github.com/epezent/implot
 [submodule "PingTracer/vendor/imcplib"]
-	path = PingTracer/vendor/imcplib
+	path = PingTracer/vendor/icmplib
 	url = https://github.com/markondej/cpp-icmplib
 [submodule "PingTracer/vendor/plfnanotimer"]
-	path = PingTracer/vendor/plfnanotimer
+	path = PingTracer/vendor/plf_nanotimer
 	url = https://github.com/mattreecebentley/plf_nanotimer
