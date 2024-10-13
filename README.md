@@ -35,6 +35,8 @@ PingTracer uses a premake build system, GenerateProjects also calls cmake to bui
 ## Source files
 ```bash
 git clone --recurse-submodules https://github.com/ccameron2/PingTracer
+cd PingTracer/PingTracer/vendor/imgui
+git checkout docking
 ```
 ## Building from source
 
