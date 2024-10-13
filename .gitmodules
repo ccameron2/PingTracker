@@ -8,3 +8,9 @@
 [submodule "PingTracer/vendor/plfnanotimer"]
 	path = PingTracer/vendor/plf_nanotimer
 	url = https://github.com/mattreecebentley/plf_nanotimer
+[submodule "PingTracer/vendor/imgui"]
+	path = PingTracer/vendor/imgui
+	url = https://github.com/ccameron2/imgui
+[submodule "PingTracer/vendor/SDL"]
+	path = PingTracer/vendor/SDL
+	url = https://github.com/ccameron2/SDL
