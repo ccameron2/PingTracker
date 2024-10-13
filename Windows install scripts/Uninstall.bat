@@ -1,7 +1,7 @@
 @echo off
 cd /d "%~dp0"
 
-set "exeName=PingSight.exe"
+set "exeName=PingTracer.exe"
 
 for %%I in ("%exeName%") do set "appName=%%~nI"
 set "installFolder=%APPDATA%\%appName%"

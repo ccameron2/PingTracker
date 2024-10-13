@@ -1,11 +1,11 @@
 @echo off
 cd /d "%~dp0"
 
-set "exeName=PingSight.exe"
+set "exeName=PingTracer.exe"
 for %%I in ("%exeName%") do set "appName=%%~nI"
 set "sourceFolder=%~dp0%appName%"
 set "installFolder=%APPDATA%\%appName%"
-set "config1=PingSightConfig.ini"
+set "config1=PingTracerConfig.ini"
 
 echo This program will install %appName% on your system.
 choice /C YN /M "Do you want to continue?"
@@ -41,6 +41,8 @@ echo Creating shortcuts...
 powershell -Command "$ws = New-Object -ComObject WScript.Shell; $s = $ws.CreateShortcut('%USERPROFILE%\Desktop\%appName%.lnk'); $s.TargetPath = '%installFolder%\%exeName%'; $s.WorkingDirectory = '%installFolder%'; $s.Save()"
 powershell -Command "$ws = New-Object -ComObject WScript.Shell; $s = $ws.CreateShortcut('%APPDATA%\Microsoft\Windows\Start Menu\Programs\%appName%\%appName%.lnk'); $s.TargetPath = '%installFolder%\%exeName%'; $s.WorkingDirectory = '%installFolder%'; $s.Save()"
 powershell -Command "$ws = New-Object -ComObject WScript.Shell; $s = $ws.CreateShortcut('%APPDATA%\Microsoft\Windows\Start Menu\Programs\%appName%\Uninstall%appName%.lnk'); $s.TargetPath = '%installFolder%\Uninstall.bat'; $s.WorkingDirectory = '%installFolder%'; $s.Save()"
+
+cls
 
 echo %appName% installation completed successfully!
 echo Please feel free to delete the %appName% folder, or keep it as a portable version

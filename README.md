@@ -3,7 +3,7 @@
 
 PingTracer is a simple, lightweight, cross-platform network utility written in C++. It helps you visualize network latency and identify connection issues.
 
-![PingTracerRunning](https://github.com/user-attachments/assets/af4d6a87-dd56-4325-9ee3-82587a02d66f)
+![PingTracerRunning](https://github.com/user-attachments/assets/e0386d29-076f-43ee-ab3c-d4938873a453)
 
 Download: [Releases](https://github.com/ccameron2/PingTracer/releases)
 
@@ -30,7 +30,7 @@ Built using:
 
 This program creates an SDL window, displays an imgui ui, and displays ping data in a graph using implot. 
 Pings are sent to "8.8.8.8" using imcplib and plfnanotimer is used to measure ping times.
-PingTracer uses a premake build system, GenerateProjects calls cmake to build SDL.
+PingTracer uses a premake build system, GenerateProjects also calls cmake to build SDL.
 
 ## Source files
 ```bash

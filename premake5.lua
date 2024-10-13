@@ -1,7 +1,7 @@
-workspace "PingSight"
+workspace "PingTracer"
     platforms "x64"
     architecture "x64"
-    startproject "PingSight"
+    startproject "PingTracer"
     dpiawareness "HighPerMonitor"
     
     configurations
@@ -19,8 +19,8 @@ IncludeDir["ImPlot"] = "%{prj.name}/vendor/implot"
 IncludeDir["Icmplib"] = "%{prj.name}/vendor/icmplib"
 IncludeDir["plf_nanotimer"] = "%{prj.name}/vendor/plf_nanotimer"
 
-project "PingSight"
-    location "PingSight"
+project "PingTracer"
+    location "PingTracer"
     kind "WindowedApp"
     language "C++"
     cppdialect "C++20"
@@ -71,23 +71,23 @@ project "PingSight"
         
         postbuildcommands
         {
-            "{COPY} src/PingSight/PingSightConfig.ini ../bin/" .. outputdir .. "/%{prj.name}",
+            "{COPY} src/PingTracer/PingTracerConfig.ini ../bin/" .. outputdir .. "/%{prj.name}",
             "{COPY} resources/Roboto.ttf ../bin/" .. outputdir .. "/%{prj.name}"
         }
 
-        files { 'PingSight/PingSight.rc', '**.ico' }
+        files { 'PingTracer/PingTracer.rc', '**.ico' }
         vpaths { ['Resources/*'] = { '*.rc', '**.ico' }}
         
         filter "configurations:Debug"
             libdirs
             {
-                "PingSight/vendor/SDL/build/Debug"
+                "PingTracer/vendor/SDL/build/Debug"
             }
         
         filter "configurations:Release"
             libdirs
             {
-                "PingSight/vendor/SDL/build/Release"
+                "PingTracer/vendor/SDL/build/Release"
             }
 
        
