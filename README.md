@@ -1,11 +1,11 @@
-# PingSight
+# PingTracer
 <img src="https://github.com/user-attachments/assets/e5bee8e3-a8ac-4859-a8d6-6fc3a90c4b75" width="300" height="300" />
 
-PingSight is a simple, lightweight, cross-platform network utility written in C++. It helps you visualize network latency and identify connection issues.
+PingTracer is a simple, lightweight, cross-platform network utility written in C++. It helps you visualize network latency and identify connection issues.
 
-![PingSightRunning](https://github.com/user-attachments/assets/af4d6a87-dd56-4325-9ee3-82587a02d66f)
+![PingTracerRunning](https://github.com/user-attachments/assets/af4d6a87-dd56-4325-9ee3-82587a02d66f)
 
-Download: [Releases](https://github.com/ccameron2/PingSight/releases)
+Download: [Releases](https://github.com/ccameron2/PingTracer/releases)
 
 ## Features
 - Visual representation of network latency
@@ -14,7 +14,7 @@ Download: [Releases](https://github.com/ccameron2/PingSight/releases)
 - Different colours!
 
 ## Installation
-Download a release from [Releases](https://github.com/ccameron2/PingSight/releases), extract, and double click the InstallPingSight.bat file.
+Download a release from [Releases](https://github.com/ccameron2/PingTracer/releases), extract, and double click the InstallPingTracer.bat file.
 Delete the downloaded folder after installation if desired
 
 ## How it works
@@ -30,11 +30,11 @@ Built using:
 
 This program creates an SDL window, displays an imgui ui, and displays ping data in a graph using implot. 
 Pings are sent to "8.8.8.8" using imcplib and plfnanotimer is used to measure ping times.
-PingSight uses a premake build system, GenerateProjects calls cmake to build SDL.
+PingTracer uses a premake build system, GenerateProjects calls cmake to build SDL.
 
 ## Source files
 ```bash
-git clone --recurse-submodules https://github.com/ccameron2/PingSight
+git clone --recurse-submodules https://github.com/ccameron2/PingTracer
 ```
 ## Building from source
 
@@ -48,6 +48,6 @@ git clone --recurse-submodules https://github.com/ccameron2/PingSight
 Coming soon
 ## License
 
-PingSight is released under the MIT License
+PingTracer is released under the MIT License
 
 ---
