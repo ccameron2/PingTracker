@@ -3,7 +3,7 @@
 
 PingSight is a simple, lightweight, cross-platform network utility written in C++. It helps you visualize network latency and identify connection issues.
 
-![PingSightRunning](https://github.com/user-attachments/assets/e0386d29-076f-43ee-ab3c-d4938873a453)
+![PingSightRunning](https://github.com/user-attachments/assets/af4d6a87-dd56-4325-9ee3-82587a02d66f)
 
 Download: [Releases](https://github.com/ccameron2/PingSight/releases)
 
@@ -28,9 +28,9 @@ Built using:
 - [premake](https://github.com/premake/premake-core)
 - [cmake](https://github.com/Kitware/CMake)
 
-This program creates an SDL window, displays an imgui ui, and displays the ping data in a graph using implot. 
+This program creates an SDL window, displays an imgui ui, and displays ping data in a graph using implot. 
 Pings are sent to "8.8.8.8" using imcplib and plfnanotimer is used to measure ping times.
-PingSight uses a premake build system, GenerateProjects also calls cmake to build SDL.
+PingSight uses a premake build system, GenerateProjects calls cmake to build SDL.
 
 ## Source files
 ```bash
@@ -42,7 +42,7 @@ git clone --recurse-submodules https://github.com/ccameron2/PingSight
 - Ensure you have [cmake](https://github.com/Kitware/CMake) installed (required to build SDL)
 - Get the source code using the above command
 - Run GenerateProjects.bat
-- Open the generated solution and build each project
+- Open the generated solution and build the project
 
 ### Linux
 Coming soon
