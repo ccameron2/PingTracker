@@ -47,7 +47,10 @@ git checkout docking
 - Open the generated solution and build the project
 
 ### Linux
-Coming soon
+- Ensure you have [cmake](https://github.com/Kitware/CMake) installed (required to build SDL)
+- Get the source code using the above command
+- Run GenerateProjects.sh
+  
 ## License
 
 PingTracer is released under the MIT License
