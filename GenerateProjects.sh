@@ -14,4 +14,6 @@ fi
 cd "../../../../"
 premake5 gmake2
 
+make -j6 all
+
 echo Press enter to continue; read dummy;

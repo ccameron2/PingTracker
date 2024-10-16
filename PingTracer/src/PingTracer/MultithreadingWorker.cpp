@@ -1,6 +1,6 @@
 #include "MultithreadingWorker.h"
 
-#include <icmplib.h>
+#include "icmplib.h"
 
 MultithreadingWorker::MultithreadingWorker(std::function<void (double, bool&)> callbackFunc)
 {
