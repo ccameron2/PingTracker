@@ -5,7 +5,7 @@ PingTracer is a simple, lightweight, cross-platform network utility written in C
 
 ![PingTracerRunning](https://github.com/user-attachments/assets/0f74c928-b364-4bd8-87d4-db222ea55196)
 
-Download: [Releases](https://github.com/ccameron2/PingTracer/releases)
+## Download: [Releases](https://github.com/ccameron2/PingTracer/releases)
 
 ## Features
 - Visual representation of network latency
