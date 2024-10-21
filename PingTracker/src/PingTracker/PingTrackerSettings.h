@@ -2,10 +2,10 @@
 #include <fstream>
 #include "App/AppSettings.h"
 
-class PingTracerSettings : public AppSettings
+class PingTrackerSettings : public AppSettings
 {
 public:
-	PingTracerSettings(std::string fileName) : AppSettings(fileName)
+	PingTrackerSettings(std::string fileName) : AppSettings(fileName)
 	{
 		ReadFromFile();
 	}

@@ -6,7 +6,7 @@
 #include <thread>
 #include <SDL3/SDL.h>
 
-#include "PingTracerSettings.h"
+#include "PingTrackerSettings.h"
 
 #include "App/AppColours.h"
 #include "MultithreadingWorker.h"
@@ -25,11 +25,11 @@ const int MIN_INTERVAL_MS = 1;
 
 const int MAX_DATAPOINTS = 100000;
 
-class PingTracer
+class PingTracker
 {
 public:
-	PingTracer();
-	~PingTracer();
+	PingTracker();
+	~PingTracker();
 
 	bool Update();
 	void RenderAppUI();
@@ -40,7 +40,7 @@ private:
 
 	void OutputDataToCSV();
 
-	PingTracerSettings mSettings = PingTracerSettings("PingTracerSettings.ini");
+	PingTrackerSettings mSettings = PingTrackerSettings("PingTrackerSettings.ini");
 
 	bool mShowControlPanel = false;
 	float* mCurrentTime;

@@ -3,7 +3,7 @@
 #include "imgui.h"
 
 #include "AppColours.h"
-#include "PingTracer/PingTracer.h"
+#include "PingTracker/PingTracker.h"
 
 class App
 {
@@ -21,5 +21,5 @@ private:
 	ImVec4 mClearColour = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 
 	ImGuiIO* mIO;
-	std::unique_ptr<PingTracer> mPingTracer;
+	std::unique_ptr<PingTracker> mPingTracker;
 };

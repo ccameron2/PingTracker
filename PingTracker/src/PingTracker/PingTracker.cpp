@@ -1,4 +1,4 @@
-#include "PingTracer.h"
+#include "PingTracker.h"
 
 #include <fstream>
 
@@ -11,7 +11,7 @@
 #include "implot.h"
 #include "MultithreadingWorker.h"
 
-PingTracer::PingTracer()
+PingTracker::PingTracker()
 {
 	mAppTimer.start();
 
@@ -43,7 +43,7 @@ PingTracer::PingTracer()
         });
 }
 
-PingTracer::~PingTracer()
+PingTracker::~PingTracker()
 {
     mMultithreadingWorker.reset();
     delete[] mCurrentTime;
@@ -52,7 +52,7 @@ PingTracer::~PingTracer()
     delete[] mTimeDataDisplay;
 }
 
-bool PingTracer::Update()
+bool PingTracker::Update()
 {
     int previousDataViewRange = mNumDataToDisplay;
     mNumDataToDisplay = mSettings.DataViewRange;
@@ -94,7 +94,7 @@ bool PingTracer::Update()
     return true;
 }
 
-void PingTracer::RenderAppUI()
+void PingTracker::RenderAppUI()
 {
     int previousDataViewRange = mSettings.DataViewRange;
 
@@ -185,7 +185,7 @@ void PingTracer::RenderAppUI()
             }
             if (ImGui::BeginPopup("Popup"))
             {
-                ImGui::Text("Saved to Documents/PingTracer");
+                ImGui::Text("Saved to Documents/PingTracker");
                 ImGui::EndPopup();
             }
 
@@ -222,9 +222,9 @@ void PingTracer::RenderAppUI()
         // Ping / time line graph
         {
 #ifdef _DEBUG
-            ImGui::Begin("PingTracer", nullptr, ImGuiWindowFlags_NoDecoration);
+            ImGui::Begin("PingTracker", nullptr, ImGuiWindowFlags_NoDecoration);
 #else
-            ImGui::Begin("PingTracer", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoInputs);
+            ImGui::Begin("PingTracker", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoInputs);
 
 #endif
             if (ImPlot::BeginPlot("My Plot", ImVec2{ -1,-1 }, ImPlotFlags_CanvasOnly /*| ImPlotFlags_NoFrame*/))
@@ -273,7 +273,7 @@ void PingTracer::RenderAppUI()
 }
 
 
-void PingTracer::ClearVisualiser()
+void PingTracker::ClearVisualiser()
 {
     mPingCount = 0;
     mCumulativePing = 0.0f;
@@ -282,7 +282,7 @@ void PingTracer::ClearVisualiser()
     mAppTimer.start();
 }
 
-void PingTracer::OutputDataToCSV()
+void PingTracker::OutputDataToCSV()
 {
     std::string docsPath = "";
 #ifdef WINDOWS
@@ -294,7 +294,7 @@ void PingTracer::OutputDataToCSV()
 	if (SUCCEEDED(hr)) wPath = ppszPath;
 
 	docsPath = std::string(wPath.begin(),wPath.end());
-    docsPath += "\\PingTracer\\";
+    docsPath += "\\PingTracker\\";
 
 #endif
     std::ofstream outFile(docsPath + "Output.csv", std::ios::trunc);

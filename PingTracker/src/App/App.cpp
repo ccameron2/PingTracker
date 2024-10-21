@@ -17,7 +17,7 @@ App::App()
 	// Create window with SDL_Renderer graphics context
 	Uint32 window_flags = SDL_WINDOW_RESIZABLE | SDL_WINDOW_HIGH_PIXEL_DENSITY;
 
-	SDL_CreateWindowAndRenderer("PingTracer", 1280, 720, window_flags, &mWindow, &mRenderer);
+	SDL_CreateWindowAndRenderer("PingTracker", 1280, 720, window_flags, &mWindow, &mRenderer);
 	SDL_SetWindowPosition(mWindow, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);
 	SDL_ShowWindow(mWindow);
 
@@ -31,7 +31,7 @@ App::App()
 	io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
 	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;         // Enable Docking
 	  
-	io.IniFilename = "PingTracerConfig.ini";
+	io.IniFilename = "PingTrackerConfig.ini";
 
 #ifdef _DEBUG
 	io.ConfigDebugIsDebuggerPresent = true;
@@ -47,9 +47,9 @@ App::App()
 	io.Fonts->AddFontFromFileTTF("Roboto.ttf", 15.0f);
 	io.Fonts->ConfigData[0].RasterizerDensity = 3.0f;
 
-	mPingTracer = std::make_unique<PingTracer>();
+	mPingTracker = std::make_unique<PingTracker>();
 
-	AppSettings* appSettings = mPingTracer->GetAppSettings();
+	AppSettings* appSettings = mPingTracker->GetAppSettings();
 	SDL_SetWindowSize(mWindow, appSettings->Width, appSettings->Height);
 }
 
@@ -96,7 +96,7 @@ bool App::Update()
 		}
 		if (event.type == SDL_EVENT_WINDOW_RESIZED && mMaximised == false)
 		{
-			AppSettings* appSettings = mPingTracer->GetAppSettings();
+			AppSettings* appSettings = mPingTracker->GetAppSettings();
 			SDL_GetWindowSize(mWindow, &appSettings->Width, &appSettings->Height);
 			appSettings->SaveToFile();
 		}
@@ -108,7 +108,7 @@ bool App::Update()
 
 	ImGui::NewFrame();
 
-	if (!mMinimised) mPingTracer->Update();
+	if (!mMinimised) mPingTracker->Update();
 
 	// Rendering
 	ImGui::Render();

@@ -1,11 +1,11 @@
-# PingTracer
+# PingTracker
 <img src="https://github.com/user-attachments/assets/e5bee8e3-a8ac-4859-a8d6-6fc3a90c4b75" width="300" height="300" />
 
-PingTracer is a simple, lightweight, cross-platform network utility written in C++. It helps you visualize network latency and identify connection issues.
+PingTracker is a simple, lightweight, cross-platform network utility written in C++. It helps you visualize network latency and identify connection issues.
 
-![PingTracerRunning](https://github.com/user-attachments/assets/0f74c928-b364-4bd8-87d4-db222ea55196)
+![PingTrackerRunning](https://github.com/user-attachments/assets/0f74c928-b364-4bd8-87d4-db222ea55196)
 
-## Download: [Releases](https://github.com/ccameron2/PingTracer/releases)
+## Download: [Releases](https://github.com/ccameron2/PingTracker/releases)
 
 ## Features
 - Visual representation of network latency
@@ -14,7 +14,7 @@ PingTracer is a simple, lightweight, cross-platform network utility written in C
 - Different colours!
 
 ## Installation
-Download a release from [Releases](https://github.com/ccameron2/PingTracer/releases), extract, and double click the InstallPingTracer.bat file.
+Download a release from [Releases](https://github.com/ccameron2/PingTracker/releases), extract, and double click the InstallPingTracker.bat file.
 Delete the downloaded folder after installation if desired
 
 ## How it works
@@ -30,12 +30,12 @@ Built using:
 
 This program creates an SDL window, displays an imgui ui, and displays ping data in a graph using implot. 
 Pings are sent to "8.8.8.8" using imcplib and plfnanotimer is used to measure ping times.
-PingTracer uses a premake build system, GenerateProjects also calls cmake to build SDL.
+PingTracker uses a premake build system, GenerateProjects also calls cmake to build SDL.
 
 ## Source files
 ```bash
-git clone --recurse-submodules https://github.com/ccameron2/PingTracer
-cd PingTracer/PingTracer/vendor/imgui
+git clone --recurse-submodules https://github.com/ccameron2/PingTracker
+cd PingTracker/PingTracker/vendor/imgui
 git checkout docking
 ```
 ## Building from source
@@ -53,6 +53,6 @@ git checkout docking
   
 ## License
 
-PingTracer is released under the MIT License
+PingTracker is released under the MIT License
 
 ---
