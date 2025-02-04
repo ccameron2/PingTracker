@@ -10,35 +10,54 @@
 #include "ImGuiProgressIndicators.h"
 #include "implot.h"
 #include "MultithreadingWorker.h"
+#include <chrono>
+#include <ctime>
 
 PingTracker::PingTracker()
 {
 	mAppTimer.start();
 
-    mCurrentTime = new float[MAX_DATAPOINTS];
-    mPingTimes = new float[MAX_DATAPOINTS];
+    mDateTimes = new double[MAX_DATAPOINTS];
+    mPingTimes = new double[MAX_DATAPOINTS];
+    mRawTimes = new double[MAX_DATAPOINTS];
 
-    mPingDataDisplay = new float[mSettings.DataViewRange];
-    mTimeDataDisplay = new float[mSettings.DataViewRange];
+    mPingDataDisplay = new double[mSettings.DataViewRange];
+    mDateTimeDataDisplay = new double[mSettings.DataViewRange];
+    mRawTimesDataDisplay = new double[mSettings.DataViewRange];
 
-    for (int i = 0; i < MAX_DATAPOINTS; i++) { mCurrentTime[i] = 0; mPingTimes[i] = 0; }
+    for (int i = 0; i < MAX_DATAPOINTS; i++) { mPingTimes[i] = 0; mDateTimes[i] = 0; mRawTimes[i] = 0;}
 
     // Start multithreading worker and provide a callback
     mMultithreadingWorker = std::make_unique<MultithreadingWorker>([this](double result, bool& completed)
         {
             completed = true;
             mPingTimes[mPingCount] = static_cast<float>(result);
-            mCurrentTime[mPingCount] = static_cast<float>(mAppTimer.get_elapsed_ms()) / 1000.0f;
+        
+            auto now = std::chrono::system_clock::now();
+            std::time_t currentTime = std::chrono::system_clock::to_time_t(now);
+        
+            mDateTimes[mPingCount] = currentTime;
 
+            mRawTimes[mPingCount] = mAppTimer.get_elapsed_ms() / 1000.0;
+            
             mPingsStarted = true;
 
             if (mPingCount >= MAX_DATAPOINTS - 1)
             {
-                mPingCount = 0;
+                ClearVisualiser();
             }
             else
             {
                 mPingCount++;
+            }
+
+            if(mUseDateTime)
+            {
+                mMultithreadingWorker->SetThreadSleepTime(MAX_INTERVAL_MS);
+            }
+            else
+            {
+                mMultithreadingWorker->SetThreadSleepTime(mSettings.Interval);
             }
         });
 }
@@ -46,10 +65,14 @@ PingTracker::PingTracker()
 PingTracker::~PingTracker()
 {
     mMultithreadingWorker.reset();
-    delete[] mCurrentTime;
+    
+    delete[] mDateTimes;
     delete[] mPingTimes;
+    delete[] mRawTimes;
+    
     delete[] mPingDataDisplay;
-    delete[] mTimeDataDisplay;
+    delete[] mDateTimeDataDisplay;
+    delete[] mRawTimesDataDisplay;
 }
 
 bool PingTracker::Update()
@@ -66,9 +89,11 @@ bool PingTracker::Update()
     if (mNumDataToDisplay != previousDataViewRange)
     {
         delete[] mPingDataDisplay;
-        delete[] mTimeDataDisplay;
-        mPingDataDisplay = new float[mNumDataToDisplay];
-        mTimeDataDisplay = new float[mNumDataToDisplay];
+        delete[] mDateTimeDataDisplay;
+        delete[] mRawTimesDataDisplay;
+        mPingDataDisplay = new double[mNumDataToDisplay];
+        mDateTimeDataDisplay = new double[mNumDataToDisplay];
+        mRawTimesDataDisplay = new double[mNumDataToDisplay];
     }
 
     float cumulativePing = 0;
@@ -78,15 +103,16 @@ bool PingTracker::Update()
         for (int i = 0; i < mNumDataToDisplay; i++)
         {
             auto offset = mPingCount - mNumDataToDisplay;
-            mTimeDataDisplay[i] = mCurrentTime[i + offset];
+            mDateTimeDataDisplay[i] = mDateTimes[i + offset];
             mPingDataDisplay[i] = mPingTimes[i + offset];
-
+            mRawTimesDataDisplay[i] = mRawTimes[i + offset];
+            
             cumulativePing += mPingDataDisplay[i];
             if (mPingDataDisplay[i] > mMaxPing) mMaxPing = mPingDataDisplay[i];
             if (mPingDataDisplay[i] < mMinPing) mMinPing = mPingDataDisplay[i];
         }
     }
-
+    
     mCumulativePing = cumulativePing;
 
     RenderAppUI();
@@ -113,10 +139,9 @@ void PingTracker::RenderAppUI()
             ImGui::Begin("Progress Indicator", nullptr, ImGuiWindowFlags_NoDecoration);
 
             const ImU32 col = ImGui::GetColorU32(ImGuiCol_ButtonHovered);
-            const ImU32 bg = ImGui::GetColorU32(ImGuiCol_Button);
-
+            
             auto viewport = ImGui::GetMainViewport();
-
+            
             const float radius = ImGui::GetMainViewport()->Size.y / 4;
             const float windowWidth = viewport->Size.x;
             const float windowHeight = viewport->Size.y;
@@ -130,11 +155,6 @@ void PingTracker::RenderAppUI()
     }
     else
     {
-        {
-            //static bool showDemoWindow = false;
-            //ImGui::ShowDemoWindow(&showDemoWindow);
-        }
-
         // Control panel
         if (mShowControlPanel)
         {
@@ -190,7 +210,8 @@ void PingTracker::RenderAppUI()
             }
 
             ImGui::SameLine();
-
+            
+            ImGui::BeginDisabled(mUseDateTime);
             ImGui::PushItemWidth(mIntervalBoxWidth);
             if (ImGui::InputInt("Interval to ping(ms)", &mThreadSleepTime, -1, -1))
             {
@@ -199,9 +220,17 @@ void PingTracker::RenderAppUI()
                 mMultithreadingWorker->SetThreadSleepTime(mThreadSleepTime);
                 mSettings.SaveToFile();
             }
-
+            ImGui::EndDisabled();
+            
             ImGui::SameLine();
 
+            if(ImGui::Checkbox("Use DateTime", &mUseDateTime))
+            {
+                ClearVisualiser();
+            }
+            
+            ImGui::SameLine();
+            
             ImGui::Text("");
 
             auto prevColour = mSettings.Colour;
@@ -210,8 +239,7 @@ void PingTracker::RenderAppUI()
             mSettings.RenderColourPicker();
             if (prevColour != mSettings.Colour && mSettings.Colour != "") 
                 mSettings.SaveToFile();
-
-
+            
             ImGui::SameLine();
             ImGuiIO& io = ImGui::GetIO();
             ImGui::Text("%.3f ms (%.1f FPS)", 1000.0f / io.Framerate, io.Framerate);
@@ -225,16 +253,24 @@ void PingTracker::RenderAppUI()
             ImGui::Begin("PingTracker", nullptr, ImGuiWindowFlags_NoDecoration);
 #else
             ImGui::Begin("PingTracker", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoInputs);
-
 #endif
             if (ImPlot::BeginPlot("My Plot", ImVec2{ -1,-1 }, ImPlotFlags_CanvasOnly /*| ImPlotFlags_NoFrame*/))
             {
-                ImPlot::SetupAxes("Time (s)", "Ping (ms)", ImPlotAxisFlags_AutoFit, ImPlotAxisFlags_AutoFit);
-
+               
                 ImPlot::PushStyleColor(ImPlotCol_Line, mSettings.GetCurrentColourRGBA());
 
-                ImPlot::PlotLine("My Line Plot", mTimeDataDisplay, mPingDataDisplay, mNumDataToDisplay);
-
+                if(mUseDateTime)
+                {
+                    ImPlot::SetupAxes("DateTime (s)", "Ping (ms)", ImPlotAxisFlags_AutoFit, ImPlotAxisFlags_AutoFit);
+                    ImPlot::SetupAxisScale(ImAxis_X1, ImPlotScale_Time);
+                    ImPlot::PlotLine("DateTime / Ping", mDateTimeDataDisplay, mPingDataDisplay, mNumDataToDisplay);
+                }
+                else
+                {
+                    ImPlot::SetupAxes("Time (s)", "Ping (ms)", ImPlotAxisFlags_AutoFit, ImPlotAxisFlags_AutoFit);
+                    ImPlot::PlotLine("Time / Ping", mRawTimesDataDisplay, mPingDataDisplay, mNumDataToDisplay);
+                }
+                
                 ImPlot::PopStyleColor();
 
                 ImPlot::EndPlot();
@@ -300,7 +336,7 @@ void PingTracker::OutputDataToCSV()
     std::ofstream outFile(docsPath + "Output.csv", std::ios::trunc);
     for(int i = 0; i < mPingCount; i++)
     {
-        outFile << mCurrentTime[i] << "," << mPingTimes[i] << "\n";
+        outFile << mRawTimes[i] << "," << mPingTimes[i] << "\n";
     }
     outFile.close();
 }

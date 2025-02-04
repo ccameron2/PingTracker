@@ -22,8 +22,7 @@ static WorkerThread mWorker;
 
 const int MAX_INTERVAL_MS = 1000;
 const int MIN_INTERVAL_MS = 1;
-
-const int MAX_DATAPOINTS = 100000;
+const int MAX_DATAPOINTS = 1000000;
 
 class PingTracker
 {
@@ -43,16 +42,24 @@ private:
 	PingTrackerSettings mSettings = PingTrackerSettings("PingTrackerSettings.ini");
 
 	bool mShowControlPanel = false;
-	float* mCurrentTime;
-	float* mPingTimes;
+	
+	double* mPingTimes;
+	double* mDateTimes;
+	double* mRawTimes;
+	
+	double* mPingDataDisplay;
+	double* mDateTimeDataDisplay;
+	double* mRawTimesDataDisplay;
+
+	bool mUseDateTime = false;
+	
 	int mThreadSleepTime = 5;
 	float mCumulativePing = 0.0f;
+	
 	float mMaxPing = 0.0f;
 	float mMinPing = 999999.0f;
+	
 	int mNumDataToDisplay = 0;
-
-	float* mPingDataDisplay;
-	float* mTimeDataDisplay;
 
 	int mPingCount = 0;
 	plf::nanotimer mAppTimer;

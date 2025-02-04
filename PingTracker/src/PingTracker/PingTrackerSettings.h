@@ -2,6 +2,8 @@
 #include <fstream>
 #include "App/AppSettings.h"
 
+//TODO save datetime settings
+
 class PingTrackerSettings : public AppSettings
 {
 public:

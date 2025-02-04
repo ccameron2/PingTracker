@@ -18,7 +18,7 @@ private:
 
 	bool mMinimised = false;
 	bool mMaximised = false;
-	ImVec4 mClearColour = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
+	const ImVec4 mClearColour = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 
 	ImGuiIO* mIO;
 	std::unique_ptr<PingTracker> mPingTracker;
