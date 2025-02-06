@@ -37,6 +37,9 @@ mkdir "%APPDATA%\%appName%"
 echo Creating Start Menu folder...
 mkdir "%APPDATA%\Microsoft\Windows\Start Menu\Programs\%appName%\"
 
+echo Creating Documents folder...
+mkdir "%USERPROFILE%\Documents\%appName%
+
 echo Creating shortcuts...
 powershell -Command "$ws = New-Object -ComObject WScript.Shell; $s = $ws.CreateShortcut('%USERPROFILE%\Desktop\%appName%.lnk'); $s.TargetPath = '%installFolder%\%exeName%'; $s.WorkingDirectory = '%installFolder%'; $s.Save()"
 powershell -Command "$ws = New-Object -ComObject WScript.Shell; $s = $ws.CreateShortcut('%APPDATA%\Microsoft\Windows\Start Menu\Programs\%appName%\%appName%.lnk'); $s.TargetPath = '%installFolder%\%exeName%'; $s.WorkingDirectory = '%installFolder%'; $s.Save()"
