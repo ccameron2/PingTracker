@@ -14,7 +14,7 @@ PingTracker is a simple, lightweight, cross-platform network utility written in 
 - Different colours!
 
 ## Installation
-Download a release from [Releases](https://github.com/ccameron2/PingTracker/releases), extract, and double click the InstallPingTracker.bat file.
+Download a release from [Releases](https://github.com/ccameron2/PingTracker/releases), extract, and double click the Install.bat file.
 Delete the downloaded folder after installation if desired
 
 ## How it works
