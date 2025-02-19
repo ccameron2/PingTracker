@@ -39,9 +39,12 @@ PingTracker::PingTracker()
             mDateTimes[mPingCount] = currentTime;
 
             mRawTimes[mPingCount] = mAppTimer.get_elapsed_ms() / 1000.0;
-            
-            mPingsStarted = true;
 
+            if(mPingCount > 0)
+            {
+                mPingsStarted = true;
+            }
+        
             if (mPingCount >= MAX_DATAPOINTS - 1)
             {
                 ClearVisualiser();
@@ -49,15 +52,6 @@ PingTracker::PingTracker()
             else
             {
                 mPingCount++;
-            }
-
-            if(mUseDateTime)
-            {
-                mMultithreadingWorker->SetThreadSleepTime(MAX_INTERVAL_MS);
-            }
-            else
-            {
-                mMultithreadingWorker->SetThreadSleepTime(mSettings.Interval);
             }
         });
 }
@@ -316,6 +310,15 @@ void PingTracker::ClearVisualiser()
     mMaxPing = 0.0f;
     mMinPing = 999999.0f;
     mAppTimer.start();
+    mPingsStarted = false;
+    if(mUseDateTime)
+    {
+        mMultithreadingWorker->SetThreadSleepTime(MAX_INTERVAL_MS);
+    }
+    else
+    {
+        mMultithreadingWorker->SetThreadSleepTime(mSettings.Interval);
+    }
 }
 
 void PingTracker::OutputDataToCSV()
