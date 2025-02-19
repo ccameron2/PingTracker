@@ -3,7 +3,7 @@
 
 PingTracker is a simple, lightweight, cross-platform network utility written in C++. It helps you visualize network latency and identify connection issues.
 
-![PingTrackerRunning](https://github.com/user-attachments/assets/0f74c928-b364-4bd8-87d4-db222ea55196)
+![PingTracker](https://github.com/user-attachments/assets/5523eda9-2db5-417a-9480-3a55d0e32535)
 
 ## Download: [Releases](https://github.com/ccameron2/PingTracker/releases)
 
