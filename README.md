@@ -50,6 +50,7 @@ git checkout docking
 - Ensure you have [cmake](https://github.com/Kitware/CMake) installed (required to build SDL)
 - Get the source code using the above command
 - Run GenerateProjects.sh
+- Note: PingTracker must run with admin permissions on linux
   
 ## License
 
