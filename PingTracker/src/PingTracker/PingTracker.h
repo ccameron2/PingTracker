@@ -2,6 +2,7 @@
 #include "icmplib.h" // Must be above windows.h
 
 #include <functional>
+#include <mutex>
 #include <plf_nanotimer.h>
 #include <thread>
 #include <SDL3/SDL.h>
@@ -23,6 +24,7 @@ static WorkerThread mWorker;
 const int MAX_INTERVAL_MS = 1000;
 const int MIN_INTERVAL_MS = 1;
 const int MAX_DATAPOINTS = 1000000;
+const int MAX_WORKERS = 1; 
 
 class PingTracker
 {
@@ -56,15 +58,17 @@ private:
 	int mThreadSleepTime = 5;
 	float mCumulativePing = 0.0f;
 	
-	float mMaxPing = 0.0f;
-	float mMinPing = 999999.0f;
+	double mMaxPing = 0.0;
+	double mMinPing = 999999.0f;
 	
 	int mNumDataToDisplay = 0;
 
+	std::mutex mMutex;
+	
 	int mPingCount = 0;
 	plf::nanotimer mAppTimer;
 	bool mPingsStarted = false;
 	float mIntervalBoxWidth = 30.0f;
 	float mColourPickerWidth = 80.0f;
-	std::unique_ptr<MultithreadingWorker> mMultithreadingWorker;
+	std::unique_ptr<MultithreadingWorker> mMultithreadingWorkers[MAX_WORKERS];
 };

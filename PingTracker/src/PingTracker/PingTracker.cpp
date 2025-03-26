@@ -26,39 +26,50 @@ PingTracker::PingTracker()
     mRawTimesDataDisplay = new double[mSettings.DataViewRange];
 
     for (int i = 0; i < MAX_DATAPOINTS; i++) { mPingTimes[i] = 0; mDateTimes[i] = 0; mRawTimes[i] = 0;}
-
+    
     // Start multithreading worker and provide a callback
-    mMultithreadingWorker = std::make_unique<MultithreadingWorker>([this](double result, bool& completed)
-        {
-            completed = true;
-            mPingTimes[mPingCount] = static_cast<float>(result);
-        
-            auto now = std::chrono::system_clock::now();
-            std::time_t currentTime = std::chrono::system_clock::to_time_t(now);
-        
-            mDateTimes[mPingCount] = currentTime;
 
-            mRawTimes[mPingCount] = mAppTimer.get_elapsed_ms() / 1000.0;
-
-            if(mPingCount > 0)
+    for (int i = 0; i < MAX_WORKERS; i++)
+    {
+        mMultithreadingWorkers[i] = std::make_unique<MultithreadingWorker>([this](double result, bool& completed)
             {
-                mPingsStarted = true;
-            }
-        
-            if (mPingCount >= MAX_DATAPOINTS - 1)
-            {
-                ClearVisualiser();
-            }
-            else
-            {
-                mPingCount++;
-            }
-        });
+                {
+                    std::lock_guard<std::mutex> lock(mMutex);
+                    mPingTimes[mPingCount] = static_cast<float>(result);
+                    
+                    completed = true;
+                    
+                    auto now = std::chrono::system_clock::now();
+                    std::time_t currentTime = std::chrono::system_clock::to_time_t(now);
+                    
+                    mDateTimes[mPingCount] = currentTime;
+    
+                    mRawTimes[mPingCount] = mAppTimer.get_elapsed_ms() / 1000.0;
+                
+                    if(mPingCount > 0)
+                    {
+                        mPingsStarted = true;
+                    }
+            
+                    if (mPingCount >= MAX_DATAPOINTS - 1)
+                    {
+                        ClearVisualiser();
+                    }
+                    else
+                    {
+                        mPingCount++;
+                    }
+                }
+            });
+    }
 }
 
 PingTracker::~PingTracker()
 {
-    mMultithreadingWorker.reset();
+    for (auto& worker : mMultithreadingWorkers)
+    {
+        worker.reset();
+    }
     
     delete[] mDateTimes;
     delete[] mPingTimes;
@@ -211,7 +222,12 @@ void PingTracker::RenderAppUI()
             {
                 if (mThreadSleepTime > MAX_INTERVAL_MS) mThreadSleepTime = MAX_INTERVAL_MS;
                 if (mThreadSleepTime < MIN_INTERVAL_MS) mThreadSleepTime = MIN_INTERVAL_MS;
-                mMultithreadingWorker->SetThreadSleepTime(mThreadSleepTime);
+
+                for (auto& worker : mMultithreadingWorkers)
+                {
+                    worker->SetThreadSleepTime(mThreadSleepTime);
+                }
+                
                 mSettings.SaveToFile();
             }
             ImGui::EndDisabled();
@@ -279,10 +295,10 @@ void PingTracker::RenderAppUI()
             ImGui::Text("Current average ping: %.2fms", mCumulativePing / mNumDataToDisplay);
 
         	ImGui::SameLine();
-            ImGui::Text("| Max ping: %.2fms", mMaxPing);
+            ImGui::Text("| Max ping: %.2ms", mMaxPing);
 
             ImGui::SameLine();
-            ImGui::Text("| Min ping: %.2fms", mMinPing);
+            ImGui::Text("| Min ping: %.2ms", mMinPing);
 
             ImGui::SameLine();
             ImGui::Text("| Total time: %.2fs", mAppTimer.get_elapsed_ms() / 1000.0f);
@@ -311,13 +327,17 @@ void PingTracker::ClearVisualiser()
     mMinPing = 999999.0f;
     mAppTimer.start();
     mPingsStarted = false;
-    if(mUseDateTime)
+
+    for (auto& worker : mMultithreadingWorkers)
     {
-        mMultithreadingWorker->SetThreadSleepTime(MAX_INTERVAL_MS);
-    }
-    else
-    {
-        mMultithreadingWorker->SetThreadSleepTime(mSettings.Interval);
+        if(mUseDateTime)
+        {
+            worker->SetThreadSleepTime(MAX_INTERVAL_MS);
+        }
+        else
+        {
+            worker->SetThreadSleepTime(mSettings.Interval);
+        }
     }
 }
 
