@@ -30,8 +30,6 @@ App::App()
 	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
 	io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
 	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;         // Enable Docking
-	  
-	io.IniFilename = "PingTrackerConfig.ini";
 
 #ifdef _DEBUG
 	io.ConfigDebugIsDebuggerPresent = true;

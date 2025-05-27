@@ -6,7 +6,6 @@
 #include <shlobj_core.h>
 #endif
 
-#include "App/App.h"
 #include "ImGuiProgressIndicators.h"
 #include "implot.h"
 #include "MultithreadingWorker.h"
@@ -80,6 +79,8 @@ PingTracker::~PingTracker()
     delete[] mRawTimesDataDisplay;
 }
 
+#include "imgui.h"
+
 bool PingTracker::Update()
 {
     int previousDataViewRange = mNumDataToDisplay;
@@ -125,23 +126,50 @@ bool PingTracker::Update()
     return true;
 }
 
+void SetupDockspace()
+{
+    auto viewport = ImGui::GetMainViewport();
+    ImGuiID dockspaceID = ImGui::DockSpaceOverViewport(0, viewport, ImGuiDockNodeFlags_NoResize | ImGuiDockNodeFlags_NoTabBar);
+    
+    static bool first = true;
+    if (first)
+    {
+        first = false;
+        ImGui::DockBuilderRemoveNode(dockspaceID);
+        ImGui::DockBuilderAddNode(dockspaceID, ImGuiDockNodeFlags_DockSpace);
+        ImGui::DockBuilderSetNodeSize(dockspaceID, viewport->Size);
+
+        ImGuiID dockMain = dockspaceID;
+        
+        ImGuiID dockStats = ImGui::DockBuilderSplitNode(dockMain, ImGuiDir_Down, 0.08f, nullptr, &dockMain);
+        ImGuiID dockControls = ImGui::DockBuilderSplitNode(dockMain, ImGuiDir_Down, 0.08f, nullptr, &dockMain);
+
+        ImGui::DockBuilderGetNode(dockMain)->SetLocalFlags(ImGuiDockNodeFlags_NoTabBar | ImGuiDockNodeFlags_NoResize);
+        ImGui::DockBuilderGetNode(dockControls)->SetLocalFlags(ImGuiDockNodeFlags_NoTabBar | ImGuiDockNodeFlags_NoResize);
+        ImGui::DockBuilderGetNode(dockStats)->SetLocalFlags(ImGuiDockNodeFlags_NoTabBar | ImGuiDockNodeFlags_NoResize);
+
+        ImGui::DockBuilderDockWindow("PingTracker", dockMain);
+        ImGui::DockBuilderDockWindow("Controls", dockControls);
+        ImGui::DockBuilderDockWindow("Stats", dockStats);
+
+        ImGui::DockBuilderDockWindow("Progress Indicator", dockMain);
+
+        ImGui::DockBuilderFinish(dockspaceID);
+    }
+}
+
 void PingTracker::RenderAppUI()
 {
     int previousDataViewRange = mSettings.DataViewRange;
 
-    // Make the background a DockSpace
-    {
-#ifdef _DEBUG
-        ImGui::DockSpaceOverViewport(0, ImGui::GetMainViewport(), ImGuiDockNodeFlags_PassthruCentralNode | ImGuiDockNodeFlags_AutoHideTabBar);
-#else
-        ImGui::DockSpaceOverViewport(0, ImGui::GetMainViewport(), ImGuiDockNodeFlags_PassthruCentralNode | ImGuiDockNodeFlags_AutoHideTabBar | ImGuiDockNodeFlags_NoResize | ImGuiDockNodeFlags_NoTabBar);
-#endif
-    }
+    SetupDockspace();
 
+    ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoNav;
+    
     if (!mPingsStarted)
     {
         {
-            ImGui::Begin("Progress Indicator", nullptr, ImGuiWindowFlags_NoDecoration);
+            ImGui::Begin("Progress Indicator", nullptr, windowFlags);
 
             const ImU32 col = ImGui::GetColorU32(ImGuiCol_ButtonHovered);
             
@@ -163,11 +191,7 @@ void PingTracker::RenderAppUI()
         // Control panel
         if (mShowControlPanel)
         {
-#ifdef _DEBUG
-            ImGui::Begin("Controls");
-#else
-            ImGui::Begin("Controls", nullptr, ImGuiWindowFlags_NoNav | ImGuiWindowFlags_NoMove);
-#endif
+            ImGui::Begin("Controls", nullptr, windowFlags);
             if (ImGui::Checkbox("View All", &mSettings.ShowAllData))
             {
                 mSettings.SaveToFile();
@@ -259,11 +283,7 @@ void PingTracker::RenderAppUI()
 
         // Ping / time line graph
         {
-#ifdef _DEBUG
-            ImGui::Begin("PingTracker", nullptr, ImGuiWindowFlags_NoDecoration);
-#else
-            ImGui::Begin("PingTracker", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoInputs);
-#endif
+            ImGui::Begin("PingTracker", nullptr, windowFlags | ImGuiWindowFlags_NoInputs);
             if (ImPlot::BeginPlot("My Plot", ImVec2{ -1,-1 }, ImPlotFlags_CanvasOnly /*| ImPlotFlags_NoFrame*/))
             {
                
@@ -290,7 +310,7 @@ void PingTracker::RenderAppUI()
 
         // Show statistics
         {
-            ImGui::Begin("Stats", nullptr, ImGuiWindowFlags_NoScrollbar);
+            ImGui::Begin("Stats", nullptr, windowFlags);
 
             ImGui::Text("Current average ping: %.2fms", mCumulativePing / mNumDataToDisplay);
 
@@ -309,9 +329,7 @@ void PingTracker::RenderAppUI()
             if (mShowControlPanel != prevShowControlPanel) mSettings.SaveToFile();
 
         	ImGui::SameLine();
-#ifdef _DEBUG
-
-#endif
+            
             ImGui::End();
         }
     }
